@@ -1,4 +1,5 @@
 package chess;
+import java.util.Arrays;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -8,8 +9,11 @@ package chess;
  */
 public class ChessBoard {
 
+    private int[][] boardMatrix = new int[8][8];
+
+
     public ChessBoard() {
-        
+
     }
 
     /**
@@ -19,7 +23,8 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+
+
     }
 
     /**
@@ -32,7 +37,6 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         throw new RuntimeException("Not implemented");
     }
-
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)

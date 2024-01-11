@@ -8,6 +8,9 @@ package chess;
  */
 public class ChessPosition {
 
+    private int row;
+    private int col;
+
     public ChessPosition(int row, int col) {
     }
 
@@ -27,3 +30,11 @@ public class ChessPosition {
         throw new RuntimeException("Not implemented");
     }
 }
+
+//var nameBuilder = new StringBuilder();
+//nameBuilder.append("James");
+//nameBuilder.append(" ");
+//nameBuilder.append("Gosling");
+//
+//var name = nameBuilder.toString();
+//System.out.println(name);
