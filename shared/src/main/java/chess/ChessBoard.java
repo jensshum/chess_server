@@ -1,4 +1,5 @@
 package chess;
+import java.awt.geom.NoninvertibleTransformException;
 import java.util.Arrays;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private int[][] boardMatrix = new int[8][8];
+    private ChessPiece[][] boardMatrix = new ChessPiece[8][8];
 
 
     public ChessBoard() {
@@ -23,8 +24,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-
-
+        boardMatrix[position.getRow()][position.getColumn()] = piece;
     }
 
     /**
@@ -35,7 +35,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return boardMatrix[position.getRow()][position.getColumn()];
     }
     /**
      * Sets the board to the default starting board

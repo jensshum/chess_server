@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Represents a single chess piece
@@ -11,11 +12,13 @@ import java.util.Collection;
 public class ChessPiece {
 
     private PieceType pieceType;
+    private ChessGame.TeamColor pieceColor;
 //    private ChessGame
 
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-
+    public ChessPiece(ChessGame.TeamColor pieceColor_, ChessPiece.PieceType type) {
+        pieceType = type;
+        pieceColor = pieceColor_;
     }
 
     /**
@@ -34,14 +37,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return pieceType;
     }
 
     /**
@@ -50,8 +53,17 @@ public class ChessPiece {
      * danger
      *
      * @return Collection of valid moves
+     *
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> legalMoves = new ArrayList<ChessMove>();
+
+
+        // Bishop can only move in a diagonal line, +-1 to row, +-1 to col.
+
+
+
+        return legalMoves;
+
     }
 }
