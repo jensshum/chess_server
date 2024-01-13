@@ -59,7 +59,6 @@ public class ChessPiece {
 
     public Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> legalMoves = new ArrayList<ChessMove>();
-        //down to the left -1 col/row
         //----------------------------------------------------------------------------------------------------------------
         //up to the right: +1 col/row
         int col = myPosition.getColumn();
@@ -173,12 +172,53 @@ public class ChessPiece {
                 tempRow--;
                 tempCol++;
 //                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
+                legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
 //                }
             }
         }
 
+        //-----------------------------------------------------------------------------------------------------------------
+        // Up to the left -1col +1 row
 
+        if (col + row < 9) {
+            int tempRow = row;
+            int tempCol = col;
+            while (tempRow < 8)
+            {
+                tempRow++;
+                tempCol--;
+                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
+                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
+                }
+            }
+        }
+        //upper diagonal triangle
+        else if (col + row > 9) {
+            int tempRow = row;
+            int tempCol = col;
+            while (tempCol > 1)
+            {
+                tempRow++;
+                tempCol--;
+                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
+                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
+                }
+            }
+        }
+        // On diagonal
+        else
+        {
+            int tempRow = row;
+            int tempCol = col;
+            while (tempCol > 1)
+            {
+                tempRow++;
+                tempCol--;
+//                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
+                legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
+//                }
+            }
+        }
 
 
         for (ChessMove i : legalMoves){
