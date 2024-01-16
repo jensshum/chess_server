@@ -80,22 +80,22 @@ public class ChessPiece {
         while (tempRow >= 1 && tempRow <= 8 && tempCol >= 1 && tempCol <= 8) {
             // Add checks if the position is occupied or if the move is illegal due to other game rules
             ChessPosition newPosition = new ChessPosition(tempRow, tempCol);
-            legalMoves.add(new ChessMove(myPosition, newPosition, pieceType));
-            try {
-                if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != this.pieceColor) {
-                    legalMoves.add(new ChessMove(myPosition, newPosition, pieceType));
+//            legalMoves.add(new ChessMove(myPosition, newPosition, null));
+//            try {
+                if (board.getPiece(newPosition) == null) {
+                    legalMoves.add(new ChessMove(myPosition, newPosition, null));
                 } else {
                     // If the position is occupied by an opposite color piece, it's a valid move,
                     // but you can't move further in this diagonal.
                     if (board.getPiece(newPosition).getTeamColor() != this.pieceColor) {
-                        legalMoves.add(new ChessMove(myPosition, newPosition, pieceType));
+                        legalMoves.add(new ChessMove(myPosition, newPosition, null));
                     }
                     break;
                 }
-            }
-            catch (ArrayIndexOutOfBoundsException e) {
-                break;
-            }
+//            }
+//            catch (ArrayIndexOutOfBoundsException e) {
+//                break;
+//            }
             tempRow += rowIncrement;
             tempCol += colIncrement;
         }

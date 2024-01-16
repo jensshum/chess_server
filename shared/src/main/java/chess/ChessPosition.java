@@ -13,6 +13,14 @@ public class ChessPosition {
     private int row;
 
     @Override
+    public String toString() {
+        return "ChessPosition{" +
+               "row=" + row +
+               ", col=" + col +
+               '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

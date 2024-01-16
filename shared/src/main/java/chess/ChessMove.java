@@ -15,6 +15,15 @@ public class ChessMove {
     private ChessPiece.PieceType promoPiece;
 
     @Override
+    public String toString() {
+        return "ChessMove{" +
+               "startPosition=" + startPosition +
+               ", endPosition=" + endPosition +
+               ", promoPiece=" + promoPiece +
+               '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
