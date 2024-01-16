@@ -70,7 +70,7 @@ public class ChessPiece {
      *
      */
 
-    private void addDiagonalMoves(ChessBoard board, ChessPosition myPosition, int rowIncrement, int colIncrement, Collection<ChessMove> legalMoves){
+    private void addAxialMoves(ChessBoard board, ChessPosition myPosition, int rowIncrement, int colIncrement, Collection<ChessMove> legalMoves){
         int tempRow = myPosition.getRow();
         int tempCol = myPosition.getColumn();
 
@@ -103,182 +103,20 @@ public class ChessPiece {
 
     }
 
-    private Collection<ChessMove> diagonalMoves(ChessBoard board, ChessPosition myPosition){
+    private Collection<ChessMove> axialMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> legalMoves = new HashSet<ChessMove>();
 
         // Add moves in the "up and to the right" diagonal
-        addDiagonalMoves(board, myPosition, 1, 1, legalMoves);
+        addAxialMoves(board, myPosition, 1, 1, legalMoves);
 
         // Add moves in the "down and to the left" diagonal
-        addDiagonalMoves(board, myPosition, -1, -1, legalMoves);
+        addAxialMoves(board, myPosition, -1, -1, legalMoves);
 
         // Add moves in the "up and to the left" diagonal
-        addDiagonalMoves(board, myPosition, 1, -1, legalMoves);
+        addAxialMoves(board, myPosition, 1, -1, legalMoves);
 
         // Add moves in the "down and to the right" diagonal
-        addDiagonalMoves(board, myPosition, -1, 1, legalMoves);
-//        //----------------------------------------------------------------------------------------------------------------
-//        //up to the right: +1 col/row
-//        int col = myPosition.getColumn();
-//        int row = myPosition.getRow();
-//        System.out.println(row + " " + col);
-//        if (row > col) {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempRow < 8) {
-//                tempRow++;
-//                tempCol++;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    ChessMove newMove = new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType);
-//                    legalMoves.add(newMove);
-////                }
-//            }
-//        }
-//        else if (row < col){
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempCol < 8){
-//                tempRow++;
-//                tempCol++;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//        // row == col
-//        else{
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempRow < 8){
-//                tempRow++;
-//                tempCol++;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//
-//        //-----------------------------------------------------------------------------------------------------------------
-//        //down to the left: -1col -1row
-//        if (row > col){
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempCol > 1) {
-//                tempRow--;
-//                tempCol--;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//        else if (row < col) {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempRow > 1) {
-//                tempRow--;
-//                tempCol--;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//        //row == col
-//        else {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempRow > 1) {
-//                tempRow--;
-//                tempCol--;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//        //down to the right: +1 col -1 row
-//        //lower diagonal triangle
-//        if (col + row < 9) {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempRow > 1)
-//            {
-//                tempRow--;
-//                tempCol++;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//        //upper diagonal triangle
-//        else if (col + row > 9) {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempCol < 8)
-//            {
-//                tempRow--;
-//                tempCol++;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//        // On diagonal
-//        else
-//        {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempCol < 8)
-//            {
-//                tempRow--;
-//                tempCol++;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//
-//        //-----------------------------------------------------------------------------------------------------------------
-//        // Up to the left -1col +1 row
-//
-//        if (col + row < 9) {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempRow < 8)
-//            {
-//                tempRow++;
-//                tempCol--;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//        //upper diagonal triangle
-//        else if (col + row > 9) {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempCol > 1)
-//            {
-//                tempRow++;
-//                tempCol--;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                    legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-//        // On diagonal
-//        else
-//        {
-//            int tempRow = row;
-//            int tempCol = col;
-//            while (tempCol > 1)
-//            {
-//                tempRow++;
-//                tempCol--;
-////                if (board.getPiece(new ChessPosition(tempRow, tempCol)) == null) {
-//                legalMoves.add(new ChessMove(myPosition, new ChessPosition(tempRow, tempCol), pieceType));
-////                }
-//            }
-//        }
-
+        addAxialMoves(board, myPosition, -1, 1, legalMoves);
 
         for (ChessMove i : legalMoves){
             System.out.print("{");
