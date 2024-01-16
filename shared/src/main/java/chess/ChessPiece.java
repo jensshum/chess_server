@@ -70,18 +70,17 @@ public class ChessPiece {
      *
      */
 
-    private void addAxialMoves(ChessBoard board, ChessPosition myPosition, int rowIncrement, int colIncrement, Collection<ChessMove> legalMoves){
+    private void addAxialMoves(ChessBoard board, ChessPosition myPosition, int rowIncrement, int colIncrement, Collection<ChessMove> legalMoves, boolean singleMove){
         int tempRow = myPosition.getRow();
         int tempCol = myPosition.getColumn();
 
         tempRow += rowIncrement;
         tempCol += colIncrement;
 
-        while (tempRow >= 1 && tempRow <= 8 && tempCol >= 1 && tempCol <= 8) {
-            // Add checks if the position is occupied or if the move is illegal due to other game rules
-            ChessPosition newPosition = new ChessPosition(tempRow, tempCol);
-//            legalMoves.add(new ChessMove(myPosition, newPosition, null));
-//            try {
+        if (!singleMove) {
+            while (tempRow >= 1 && tempRow <= 8 && tempCol >= 1 && tempCol <= 8) {
+                // Add checks if the position is occupied or if the move is illegal due to other game rules
+                ChessPosition newPosition = new ChessPosition(tempRow, tempCol);
                 if (board.getPiece(newPosition) == null) {
                     legalMoves.add(new ChessMove(myPosition, newPosition, null));
                 } else {
@@ -92,53 +91,129 @@ public class ChessPiece {
                     }
                     break;
                 }
-//            }
-//            catch (ArrayIndexOutOfBoundsException e) {
-//                break;
-//            }
-            tempRow += rowIncrement;
-            tempCol += colIncrement;
+                tempRow += rowIncrement;
+                tempCol += colIncrement;
+            }
         }
-
-
+        else
+        {
+            if (tempRow >= 1 && tempRow <= 8 && tempCol >= 1 && tempCol <= 8) {
+                ChessPosition newPosition = new ChessPosition(tempRow, tempCol);
+                if (board.getPiece(newPosition) == null) {
+                    legalMoves.add(new ChessMove(myPosition, newPosition, null));
+                } else {
+                    // If the position is occupied by an opposite color piece, it's a valid move,
+                    // but you can't move further in this diagonal.
+                    if (board.getPiece(newPosition).getTeamColor() != this.pieceColor) {
+                        legalMoves.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                }
+            }
+        }
     }
 
-    private Collection<ChessMove> axialMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> legalMoves = new HashSet<ChessMove>();
-
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> legalBishopMoves = new HashSet<>();
         // Add moves in the "up and to the right" diagonal
-        addAxialMoves(board, myPosition, 1, 1, legalMoves);
-
+        addAxialMoves(board, myPosition, 1, 1, legalBishopMoves, false);
         // Add moves in the "down and to the left" diagonal
-        addAxialMoves(board, myPosition, -1, -1, legalMoves);
-
+        addAxialMoves(board, myPosition, -1, -1, legalBishopMoves, false);
         // Add moves in the "up and to the left" diagonal
-        addAxialMoves(board, myPosition, 1, -1, legalMoves);
-
+        addAxialMoves(board, myPosition, 1, -1, legalBishopMoves, false);
         // Add moves in the "down and to the right" diagonal
-        addAxialMoves(board, myPosition, -1, 1, legalMoves);
+        addAxialMoves(board, myPosition, -1, 1, legalBishopMoves, false);
+        return legalBishopMoves;
+    }
 
-        for (ChessMove i : legalMoves){
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> legalRookMoves = new HashSet<>();
+        // Add moves straight up
+        addAxialMoves(board, myPosition, 1, 0, legalRookMoves, false);
+        // Add moves to the right
+        addAxialMoves(board, myPosition, 0, 1, legalRookMoves, false);
+        // Add moves straight down
+        addAxialMoves(board, myPosition, -1, 0, legalRookMoves, false);
+        // Add moves to the left
+        addAxialMoves(board, myPosition, 0, -1, legalRookMoves, false);
+
+        return legalRookMoves;
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> legalKingMoves = new HashSet<>();
+        // Add moves in the "up and to the right" diagonal
+        addAxialMoves(board, myPosition, 1, 1, legalKingMoves, true);
+        // Add moves straight up
+        addAxialMoves(board, myPosition, 1, 0, legalKingMoves, true);
+        // Add moves to the right
+        addAxialMoves(board, myPosition, 0, 1, legalKingMoves, true);
+        // Add moves in the "down and to the left" diagonal
+        addAxialMoves(board, myPosition, -1, -1, legalKingMoves, true);
+        // Add moves straight down
+        addAxialMoves(board, myPosition, -1, 0, legalKingMoves, true);
+        // Add moves to the left
+        addAxialMoves(board, myPosition, 0, -1, legalKingMoves, true);
+        // Add moves in the "up and to the left" diagonal
+        addAxialMoves(board, myPosition, 1, -1, legalKingMoves, true);
+        // Add moves in the "down and to the right" diagonal
+        addAxialMoves(board, myPosition, -1, 1, legalKingMoves, true);
+//
+        return legalKingMoves;
+    }
+
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> legalQueenMoves = new HashSet<>();
+        // Add moves in the "up and to the right" diagonal
+        addAxialMoves(board, myPosition, 1, 1, legalQueenMoves, false);
+        // Add moves straight up
+        addAxialMoves(board, myPosition, 1, 0, legalQueenMoves, false);
+        // Add moves to the right
+        addAxialMoves(board, myPosition, 0, 1, legalQueenMoves, false);
+        // Add moves in the "down and to the left" diagonal
+        addAxialMoves(board, myPosition, -1, -1, legalQueenMoves, false);
+        // Add moves straight down
+        addAxialMoves(board, myPosition, -1, 0, legalQueenMoves, false);
+        // Add moves to the left
+        addAxialMoves(board, myPosition, 0, -1, legalQueenMoves, false);
+        // Add moves in the "up and to the left" diagonal
+        addAxialMoves(board, myPosition, 1, -1, legalQueenMoves, false);
+        // Add moves in the "down and to the right" diagonal
+        addAxialMoves(board, myPosition, -1, 1, legalQueenMoves, false);
+//
+        for (ChessMove i : legalQueenMoves){
             System.out.print("{");
             System.out.print(i.getEndPosition().getRow());
             System.out.print(",");
             System.out.print(i.getEndPosition().getColumn());
             System.out.print("} ");
         }
-
-        return legalMoves;
+        return legalQueenMoves;
     }
 
 
-
-    public Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> legalKingMoves = new HashSet<>();
-        return null;
-    }
 
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> legalBishopMoves = diagonalMoves(board, myPosition);
+        Collection<ChessMove> legalMoves = null;
+        switch (pieceType) {
+            case KING:
+                legalMoves = kingMoves(board, myPosition);
+                break;
+            case QUEEN:
+                legalMoves = queenMoves(board, myPosition);
+                break;
+            case BISHOP:
+                legalMoves = bishopMoves(board, myPosition);
+                break;
+            case KNIGHT:
+                break;
+            case ROOK:
+                legalMoves = rookMoves(board, myPosition);
+                break;
+            case PAWN:
+                break;
+        }
         // Bishop can only move in a diagonal line, +-1 to row, +-1 to col.
         // If the row == 8||1 the column should not increase or decrease
         // If the column == 8||1 the row should not increase or decrease
@@ -147,7 +222,7 @@ public class ChessPiece {
 //                legalMoves.add(new ChessMove(myPosition, new ChessPosition(j,i),pieceType));
 //                break;
 //
-        return legalBishopMoves;
+        return legalMoves;
 
     }
 }
