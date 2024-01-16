@@ -1,4 +1,7 @@
 package chess;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * Represents a single square position on a chess board
@@ -7,13 +10,26 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessPosition {
-
     private int row;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPosition that = (ChessPosition) o;
+        return row == that.row && col == that.col;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, col);
+    }
+
     private int col;
 
-    public ChessPosition(int row_, int col_) {
-        row = row_;
-        col = col_;
+    public ChessPosition(int row, int col) {
+        this.row = row;
+        this.col = col;
     }
 
     /**
