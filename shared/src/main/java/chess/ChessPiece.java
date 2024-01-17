@@ -191,6 +191,30 @@ public class ChessPiece {
         return legalQueenMoves;
     }
 
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> legalKnightMoves = new HashSet<>();
+        //A knight will always cover at least three squares.
+        // up two, one to the left
+        addAxialMoves(board, myPosition, 2, -1, legalKnightMoves, true);
+        // up two, one to the right
+        addAxialMoves(board, myPosition, 2, 1, legalKnightMoves, true);
+        // down two, one to the left
+        addAxialMoves(board, myPosition, -2, -1, legalKnightMoves, true);
+        // down two, one to the right
+        addAxialMoves(board, myPosition, -2, 1, legalKnightMoves, true);
+        // up one, two to the left
+        addAxialMoves(board, myPosition, 1, -2, legalKnightMoves, true);
+        // up one, two to the right
+        addAxialMoves(board, myPosition, 1, 2, legalKnightMoves, true);
+        // down one, two to the left
+        addAxialMoves(board, myPosition, -1, -2, legalKnightMoves, true);
+        // down one, two to the right
+        addAxialMoves(board, myPosition, -1, 2, legalKnightMoves, true);
+
+        return legalKnightMoves;
+
+    }
+
 
 
 
@@ -207,6 +231,7 @@ public class ChessPiece {
                 legalMoves = bishopMoves(board, myPosition);
                 break;
             case KNIGHT:
+                legalMoves = knightMoves(board, myPosition);
                 break;
             case ROOK:
                 legalMoves = rookMoves(board, myPosition);
