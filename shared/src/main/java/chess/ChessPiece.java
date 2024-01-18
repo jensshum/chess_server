@@ -1,5 +1,4 @@
 package chess;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -203,7 +202,6 @@ public class ChessPiece {
         addAxialMoves(board, myPosition, 1, -1, legalQueenMoves, false);
         // Add moves in the "down and to the right" diagonal
         addAxialMoves(board, myPosition, -1, 1, legalQueenMoves, false);
-//
 
         return legalQueenMoves;
     }
@@ -236,8 +234,23 @@ public class ChessPiece {
         int newRow = myPosition.getRow() + rowIncrement;
         if (newRow >= 1 && newRow <= 8) {
             ChessPosition newPosition = new ChessPosition(newRow, myPosition.getColumn());
-            if (board.getPiece(newPosition) == null) { // Forward move is only valid if the square is empty
-                legalMoves.add(new ChessMove(myPosition, newPosition, null));
+            if (board.getPiece(newPosition) == null) {
+                if (newRow == 1 && pieceColor == BLACK) {
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+
+                }
+                else if (newRow == 8 && pieceColor == WHITE){
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+                }
+                else{
+                    legalMoves.add(new ChessMove(myPosition, newPosition, null));
+                }
             }
         }
     }
@@ -249,8 +262,23 @@ public class ChessPiece {
             ChessPosition newPosition = new ChessPosition(newRow, newCol);
             ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
             if (pieceAtNewPosition != null && pieceAtNewPosition.getTeamColor() != this.pieceColor) { // Capture is valid if there's an opposite color piece
-                legalMoves.add(new ChessMove(myPosition, newPosition, null));
+                if (pieceColor == BLACK && newRow == 1) {
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+                }
+                else if (pieceColor == WHITE && newRow == 8) {
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+                    legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+                }
+                else {
+                    legalMoves.add(new ChessMove(myPosition, newPosition, null));
+                }
             }
+
         }
     }
 
@@ -302,7 +330,6 @@ public class ChessPiece {
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> legalPawnMoves = new HashSet<>();
-        System.out.println("{" + myPosition.getRow() + ", " + myPosition.getColumn() + "}");
         int rowDirection = (pieceColor == BLACK) ? -1 : 1; // BLACK moves down, WHITE moves up
         int startRow = (pieceColor == BLACK) ? 7 : 2; // Initial row for pawns of each color
 
@@ -311,6 +338,7 @@ public class ChessPiece {
 
         // Initial two-square move
         if (myPosition.getRow() == startRow) {
+            if ()
             addPawnForwardMoves(board, myPosition, 2 * rowDirection, legalPawnMoves);
         }
 
@@ -322,7 +350,13 @@ public class ChessPiece {
     }
 
 
-
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+               "pieceType=" + pieceType +
+               ", pieceColor=" + pieceColor +
+               '}';
+    }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> legalMoves = null;
@@ -343,6 +377,8 @@ public class ChessPiece {
                 legalMoves = rookMoves(board, myPosition);
                 break;
             case PAWN:
+//                System.out.println(board.getPiece(myPosition));
+//                System.out.println(myPosition);
                 legalMoves = pawnMoves(board, myPosition);
                 break;
         }
