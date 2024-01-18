@@ -338,8 +338,11 @@ public class ChessPiece {
 
         // Initial two-square move
         if (myPosition.getRow() == startRow) {
-            if ()
-            addPawnForwardMoves(board, myPosition, 2 * rowDirection, legalPawnMoves);
+            int col = myPosition.getColumn();
+            int row = myPosition.getRow();
+            if (board.getPiece(new ChessPosition(rowDirection + row, col)) == null) {
+                addPawnForwardMoves(board, myPosition, 2 * rowDirection, legalPawnMoves);
+            }
         }
 
         // Capture moves
