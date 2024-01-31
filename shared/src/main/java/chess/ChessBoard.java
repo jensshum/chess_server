@@ -12,7 +12,7 @@ import static chess.ChessGame.TeamColor.WHITE;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable {
 
     private ChessPiece[][] boardMatrix = new ChessPiece[8][8];
 
@@ -20,6 +20,8 @@ public class ChessBoard {
     public ChessBoard() {
 
     }
+
+//    public ChessBoard clone()
 
     /**
      * Adds a chess piece to the chessboard

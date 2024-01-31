@@ -9,9 +9,18 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessPosition {
+public class ChessPosition implements Cloneable {
     private int row;
 
+
+    @Override
+    public ChessPosition clone() {
+        try {
+            return (ChessPosition) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+        }
+    }
     @Override
     public String toString() {
         return "ChessPosition{" +
