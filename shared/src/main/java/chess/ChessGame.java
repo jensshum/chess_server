@@ -282,9 +282,39 @@ public class ChessGame {
      */
     // Checkmate is true when king is in check, cannot move, and no pieces can move to put it out of check.
     public boolean isInCheckmate(TeamColor teamColor) {
+        if (!isInCheck(teamColor)) {
+            // If the king is not in check, it's not checkmate
+            return false;
+        }
 
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = myBoard.getPiece(position);
+
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> possibleMoves = piece.pieceMoves(myBoard, position);
+
+                    for (ChessMove move : possibleMoves) {
+                        ChessBoard clonedBoard = myBoard.clone();
+                        try {
+                            makeClonedMove(move, clonedBoard);
+                            if (!cloneIsInCheck(teamColor, clonedBoard)) {
+                                // Found a move that gets the king out of check
+                                return false;
+                            }
+                        } catch (InvalidMoveException ignored) {
+                            // Ignore invalid moves
+                        }
+                    }
+                }
+            }
+        }
+
+        // No moves found that can get the king out of check
         return true;
     }
+
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
