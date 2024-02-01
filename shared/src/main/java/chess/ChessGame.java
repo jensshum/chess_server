@@ -57,11 +57,11 @@ public class ChessGame {
         Collection<ChessMove> validMoves = null;
 //        System.out.println(myBoard.getPiece(startPosition));
 
-        if (myBoard.getPiece(startPosition) != null) {
-            validMoves = myBoard.getPiece(startPosition).pieceMoves(myBoard, startPosition);
-        }
+//        if (myBoard.getPiece(startPosition) != null) {
+//            validMoves = myBoard.getPiece(startPosition).pieceMoves(myBoard, startPosition);
+//        }
 
-        Collection<ChessMove> possibleMoves = new HashSet<>();
+        Collection<ChessMove> playableMoves = new HashSet<>();
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
                 ChessPosition myPosition = new ChessPosition(i,j);
@@ -74,12 +74,26 @@ public class ChessGame {
                         for (ChessMove move : potentialMoves) {
                             ChessBoard clonedBoard = myBoard.clone();
                             try {
-                                makeMove(move);
+                                makeClonedMove(move, clonedBoard);
                                 if (!isInCheck(TeamColor.BLACK)) {
-                                    possibleMoves.add(move);
+                                    playableMoves.add(move);
                                 }
-                                myBoard.addPiece(move.getEndPosition(), null);
-                                myBoard.addPiece(move.getStartPosition(), myPiece);
+                            } catch (InvalidMoveException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                    else  {
+                        //Get the moves for each piece
+                        Collection<ChessMove> potentialMoves = myPiece.pieceMoves(myBoard, myPosition);
+                        // Move the Piece to each potential position
+                        for (ChessMove move : potentialMoves) {
+                            ChessBoard clonedBoard = myBoard.clone();
+                            try {
+                                makeClonedMove(move, clonedBoard);
+                                if (!isInCheck(TeamColor.WHITE)) {
+                                    playableMoves.add(move);
+                                }
                             } catch (InvalidMoveException e) {
                                 throw new RuntimeException(e);
                             }
@@ -98,8 +112,33 @@ public class ChessGame {
 
         //Also limits the kings moves from placing itself in check.
 
-        return validMoves;
+        return playableMoves;
     }
+
+    public void makeClonedMove(ChessMove move, ChessBoard clonedBoard) throws InvalidMoveException {
+
+        ChessPiece pieceToMove = clonedBoard.getPiece(move.getStartPosition());
+        int endCol = move.getEndPosition().getColumn();
+        int endRow = move.getEndPosition().getRow();
+
+        if (pieceToMove == null) {
+            throw new InvalidMoveException("No piece at start position");
+        }
+        if (pieceToMove.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException("It's not your turn.");
+        }
+        if (!validMoves(move.getStartPosition()).contains(move)) {
+            throw new InvalidMoveException("Invalid move for the piece");
+        }
+
+        ChessPosition endPosition = move.getEndPosition();
+        clonedBoard.addPiece(endPosition, pieceToMove);
+        clonedBoard.addPiece(move.getStartPosition(), null);
+
+        teamTurn = (teamTurn == teamColor.WHITE) ? teamColor.BLACK : teamColor.WHITE;
+
+    }
+
 
     /**
      * Makes a move in a chess game
