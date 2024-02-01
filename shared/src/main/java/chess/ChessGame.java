@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import static chess.ChessPiece.PieceType.KING;
 
@@ -14,7 +15,6 @@ public class ChessGame {
 
     private TeamColor teamColor;
     private TeamColor teamTurn;
-
     private ChessBoard myBoard;
 
     public ChessGame() {
@@ -59,6 +59,34 @@ public class ChessGame {
 
         if (myBoard.getPiece(startPosition) != null) {
             validMoves = myBoard.getPiece(startPosition).pieceMoves(myBoard, startPosition);
+        }
+
+        Collection<ChessMove> possibleMoves = new HashSet<>();
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition myPosition = new ChessPosition(i,j);
+                ChessPiece myPiece = myBoard.getPiece(myPosition);
+                if (myPiece != null && myPiece.getPieceType() != KING) {
+                    if (myPiece.getTeamColor() == TeamColor.BLACK) {
+                        //Get the moves for each piece
+                        Collection<ChessMove> potentialMoves = myPiece.pieceMoves(myBoard, myPosition);
+                        // Move the Piece to each potential position
+                        for (ChessMove move : potentialMoves) {
+                            ChessBoard clonedBoard = myBoard.clone();
+                            try {
+                                makeMove(move);
+                                if (!isInCheck(TeamColor.BLACK)) {
+                                    possibleMoves.add(move);
+                                }
+                                myBoard.addPiece(move.getEndPosition(), null);
+                                myBoard.addPiece(move.getStartPosition(), myPiece);
+                            } catch (InvalidMoveException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // an invalid move is any one which leaves the king in check.
