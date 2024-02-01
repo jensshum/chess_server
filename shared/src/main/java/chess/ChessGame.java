@@ -99,15 +99,14 @@ public class ChessGame {
         if (pieceToMove == null) {
             throw new InvalidMoveException("No piece at start position");
         }
-//        if (pieceToMove.getTeamColor() != teamTurn) {
-//            throw new InvalidMoveException("It's not your turn.");
-//        }
-//        if (!validMoves(move.getStartPosition()).contains(move)) {
-//            throw new InvalidMoveException("Invalid move for the piece");
-//        }
 
         ChessPosition endPosition = move.getEndPosition();
-        clonedBoard.addPiece(endPosition, pieceToMove);
+        if (move.getPromotionPiece() != null) {
+            clonedBoard.addPiece(endPosition, new ChessPiece(teamTurn, move.getPromotionPiece()));
+        }
+        else {
+            clonedBoard.addPiece(endPosition, pieceToMove);
+        }
         clonedBoard.addPiece(move.getStartPosition(), null);
 
         teamTurn = (teamTurn == teamColor.WHITE) ? teamColor.BLACK : teamColor.WHITE;
@@ -283,7 +282,7 @@ public class ChessGame {
      */
     // Checkmate is true when king is in check, cannot move, and no pieces can move to put it out of check.
     public boolean isInCheckmate(TeamColor teamColor) {
-        int sleep = 4;
+
         return true;
     }
 
@@ -297,7 +296,20 @@ public class ChessGame {
 
     // Stalemate is true when the king is not in check and all remaining pieces have no valid moves.
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            for (int i = 1; i < 9; i++) {
+                for (int j = 1; j < 9; j++) {
+                    ChessPosition myPosition = new ChessPosition(i,j);
+                    ChessPiece myPiece = myBoard.getPiece(myPosition);
+                    if (myPiece != null && myPiece.getTeamColor() == teamColor) {
+                        if (validMoves(myPosition).size() > 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 
