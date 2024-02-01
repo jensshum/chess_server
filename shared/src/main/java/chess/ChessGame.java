@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import static chess.ChessPiece.PieceType.KING;
+import static chess.ChessPiece.PieceType.PAWN;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -137,11 +138,15 @@ public class ChessGame {
 //        }
 
         ChessPosition endPosition = move.getEndPosition();
-        myBoard.addPiece(endPosition, pieceToMove);
+        if (move.getPromotionPiece() != null) {
+            myBoard.addPiece(endPosition, new ChessPiece(teamTurn, move.getPromotionPiece()));
+        }
+        else {
+            myBoard.addPiece(endPosition, pieceToMove);
+        }
         myBoard.addPiece(move.getStartPosition(), null);
 
         teamTurn = (teamTurn == teamColor.WHITE) ? teamColor.BLACK : teamColor.WHITE;
-
     }
 
     public boolean cloneIsInCheck(TeamColor teamColor, ChessBoard clonedBoard) {

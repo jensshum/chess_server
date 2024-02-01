@@ -249,7 +249,6 @@ public class ChessPiece implements Cloneable{
                     legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
                     legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
                     legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
-
                 }
                 else if (newRow == 8 && pieceColor == WHITE){
                     legalMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
@@ -287,7 +286,6 @@ public class ChessPiece implements Cloneable{
                     legalMoves.add(new ChessMove(myPosition, newPosition, null));
                 }
             }
-
         }
     }
 
