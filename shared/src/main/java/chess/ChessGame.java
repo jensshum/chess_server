@@ -1,5 +1,6 @@
 package chess;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -68,6 +69,7 @@ public class ChessGame {
                             playableMoves.add(move);
                         }
                     } catch (InvalidMoveException e) {
+                        System.out.println("ERROR CAUGHT");
                         throw new RuntimeException(e);
                     }
                 }
@@ -82,6 +84,7 @@ public class ChessGame {
                             playableMoves.add(move);
                         }
                     } catch (InvalidMoveException e) {
+                        System.out.println("ERROR CAUGHT");
                         throw new RuntimeException(e);
                     }
                 }
@@ -109,7 +112,7 @@ public class ChessGame {
         }
         clonedBoard.addPiece(move.getStartPosition(), null);
 
-        teamTurn = (teamTurn == teamColor.WHITE) ? teamColor.BLACK : teamColor.WHITE;
+//        teamTurn = (teamTurn == teamColor.WHITE) ? teamColor.BLACK : teamColor.WHITE;
 
     }
 
@@ -126,15 +129,19 @@ public class ChessGame {
         int endCol = move.getEndPosition().getColumn();
         int endRow = move.getEndPosition().getRow();
 
+
         if (pieceToMove == null) {
             throw new InvalidMoveException("No piece at start position");
         }
         if (pieceToMove.getTeamColor() != teamTurn) {
             throw new InvalidMoveException("It's not your turn.");
         }
-//        if (!validMoves(move.getStartPosition()).contains(move)) {
-//            throw new InvalidMoveException("Invalid move for the piece");
-//        }
+        if (!validMoves(move.getStartPosition()).contains(move)) {
+            System.out.println("NO");
+            System.out.println(move.toString());
+            System.out.println(myBoard.getPiece(move.getStartPosition()));
+            throw new InvalidMoveException("Invalid move.");
+        }
 
         ChessPosition endPosition = move.getEndPosition();
         if (move.getPromotionPiece() != null) {
