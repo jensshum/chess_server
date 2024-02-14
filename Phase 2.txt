@@ -1,0 +1,107 @@
+actor Client
+participant Server
+participant RegistrationService
+participant DataAccess
+
+database db
+
+entryspacing 1.0
+group #navy Registration #white
+Client -> Server: [POST] /user\n{username, password, email}
+Server -> RegistrationService: register(username, password, email)
+RegistrationService -> DataAccess: getUser(username)
+DataAccess -> db: SELECT username from user
+DataAccess --> RegistrationService: null
+RegistrationService -> DataAccess: createUser(username, password)
+DataAccess -> db: INSERT username, password, email INTO user
+RegistrationService -> DataAccess: createAuth(username)
+DataAccess -> db: INSERT username, authToken INTO auth
+DataAccess --> RegistrationService: authToken
+RegistrationService --> Server: authToken
+Server --> Client: 200\n{authToken}
+end
+
+group #orange Login #white
+Client -> Server: [POST] /session\n{username, password}
+
+Server->RegistrationService: login(username, password)
+
+RegistrationService->DataAccess: loginUser(username, password)
+
+DataAccess->db: SELECT username, password FROM user
+
+RegistrationService->DataAccess: createAuth(username)
+DataAccess->db: INSERT username, authToken INTO auth
+DataAccess -->RegistrationService: authToken
+
+RegistrationService-->Server: authToken
+Server-->Client: authToken
+end
+
+group #green Logout #white
+Client -> Server: [DELETE] /session\nauthToken
+Server->RegistrationService: logout(authToken)
+RegistrationService->DataAccess: logoutUser(authToken)
+DataAccess->db: DELETE FROM db WHERE auth = authToken
+
+end
+
+group #red List Games #white
+Client -> Server: [GET] /game\nauthToken
+Server->RegistrationService: gamesList(autToken)
+RegistrationService->DataAccess: getGameID(authToken)
+DataAccess->db:SELECT gameId FROM chessgame
+
+DataAccess-->RegistrationService:gameId
+RegistrationService->DataAccess: getGameUsers(gameId)
+DataAccess->db: SELECT user FROM chessgame WHERE gameId = gameId
+RegistrationService->DataAccess: getGameName(gameId)
+DataAccess->db: SELECT gameName FROM chessgame WHERE gameId = gameId
+DataAccess-->RegistrationService: gameId, whiteUsername, blackUsername, gameName
+RegistrationService-->Server:gameId, whiteUsername, blackUsername, gameName
+Server-->Client: SELECT gameName FROM chessgame WHERE gameId = gameId
+end
+
+group #purple Create Game #white
+Client -> Server: [POST] /game\nauthToken\n{gameName}
+Server->RegistrationService: createGame(authToken)
+RegistrationService->DataAccess: createGameId(authToken)
+DataAccess->db: INSERT gameId INTO chessgame
+DataAccess-->RegistrationService: gameId
+RegistrationService-->Server: gameId
+Server-->Client: gameId
+
+
+end
+
+group #yellow Join Game #black
+Client -> Server: [PUT] /game authToken, {playerColor, gameID}
+Server->RegistrationService: joinGame(authToken, playerColor, gameID)
+RegistrationService->DataAccess: updateGamePlayer(authToken, playerColor, gameID)
+DataAccess->db: UPDATE chessgame SET playercolor = playerColor WHERE gameId = gameID
+
+
+
+/game\nauthToken\n{ClientColor, gameID}
+end
+
+group #gray Clear application #white
+Client -> Server: [DELETE] /db 
+Server->RegistrationService: clearDatabase()
+RegistrationService->DataAccess: clearDatabase()
+DataAccess->db: DELETE FROM chessgame
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
