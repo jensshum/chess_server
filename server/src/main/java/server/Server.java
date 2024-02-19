@@ -9,6 +9,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+
         // Register your endpoints and handle exceptions here.
 
         Spark.awaitInitialization();
