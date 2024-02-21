@@ -1,4 +1,5 @@
 import chess.*;
+import dataAccess.MemoryAuthDAO;
 import server.Server;
 
 public class Main {
