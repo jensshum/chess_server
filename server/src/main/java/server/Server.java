@@ -7,13 +7,9 @@ import spark.*;
 
 public class Server {
 
-//    private ChessService chessService;
     private ServerHandler handler;
     public Server() {
-        // Change to DataBase Access
-        AuthDAO memoryDAO = new MemoryAuthDAO();
-        handler = new ServerHandler(memoryDAO);
-
+        handler = new ServerHandler();
     }
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -29,11 +25,13 @@ public class Server {
         Spark.get("/game", (req, res) -> handler.listGames(req, res));
         Spark.post("/game", (req, res) -> handler.createGame(req, res));
         Spark.put("/game", (req, res) -> handler.joinGame(req, res));
+//        Spark.exception(DataAccessException.class, (ex, req, res) -> handler.exceptionHandler(ex, req, res));
 
         Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
     }
+
 
     public void stop() {
         Spark.stop();

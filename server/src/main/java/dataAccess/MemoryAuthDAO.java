@@ -13,15 +13,21 @@ public class MemoryAuthDAO implements AuthDAO {
 //    public UserData registerUser(String username, String password, String email) {
 //        return new UserData(username, password, email);
 //    }
-    public UserData createUser(String username, String password, String email) {
-        UserData newUser = new UserData(username, password, email);
+    @Override
+    public UserData insertUser(UserData newUser) {
         users.put(nextId, newUser);
         nextId++;
-
-        for (Map.Entry<Integer, UserData> entry : users.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
         return newUser;
+    }
+
+    @Override
+    public UserData selectUser(UserData user) {
+        for (Map.Entry<Integer, UserData> entry : users.entrySet()) {
+            if (entry.getValue().equals(user)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
 }

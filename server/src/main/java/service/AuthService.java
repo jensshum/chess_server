@@ -2,18 +2,20 @@ package service;
 
 import dataAccess.AuthDAO;
 import dataAccess.MemoryAuthDAO;
-import model.AuthData;
 import model.UserData;
 import dataAccess.DataAccessException;
 
 public class AuthService {
 
-    private AuthDAO authDAO;
+    private AuthDAO dataAccess;
     public AuthService() {
-        AuthDAO authDAO = new MemoryAuthDAO();
+         dataAccess = new MemoryAuthDAO();
     }
 
-    public UserData register(String username, String password, String email){
-        return new UserData("jensshum", "fling", "email.com");
+    public UserData getUser(UserData user) throws DataAccessException {
+        return dataAccess.selectUser(user);
+    }
+    public UserData register(UserData user) throws DataAccessException{
+        return dataAccess.insertUser(user);
     };
 }

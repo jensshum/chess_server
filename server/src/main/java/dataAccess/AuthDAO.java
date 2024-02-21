@@ -5,8 +5,7 @@ import org.eclipse.jetty.server.Authentication;
 
 public interface AuthDAO {
 
-    public UserData createUser(String username, String password, String email);
-
-
+    public UserData insertUser(UserData user);
+    public UserData selectUser(UserData user);
 
 }
