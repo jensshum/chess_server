@@ -26,8 +26,8 @@ public class ServerHandler {
     public Object registerUser(Request req, Response res) throws ResponseException {
         var user = new Gson().fromJson(req.body(), UserData.class);
         if (authService.getUser(user) == null) {
-            user = authService.register(user);
-            return new Gson().toJson(user);
+            AuthData newUser = authService.register(user);
+            return new Gson().toJson(newUser);
         }
         else {
             res.status(403);
@@ -40,7 +40,8 @@ public class ServerHandler {
     }
 
     public Object loginUser(Request req, Response res) {
-        var bodyObj = getBody(req, Map.class);
+        var user = new Gson().fromJson(req.body(), Map.class);
+        AuthData newAuth = authService.login(user);
         res.type("application/json");
         return new Gson().toJson(bodyObj);
     }

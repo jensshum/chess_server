@@ -6,6 +6,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class AuthService {
@@ -29,6 +30,10 @@ public class AuthService {
         AuthData insertedAuth = dataAccess.createToken(newAuth);
         return insertedAuth;
     };
+
+    public AuthData login(Map user) {
+        dataAccess.loginUser()
+    }
 
 
 }
