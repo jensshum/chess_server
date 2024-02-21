@@ -2,12 +2,14 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import model.AuthData;
 import model.UserData;
 import service.AuthService;
 import spark.Request;
 import spark.Response;
 
 import java.util.Map;
+import exception.ResponseException;
 
 public class ServerHandler {
 
@@ -21,18 +23,21 @@ public class ServerHandler {
         res.type("application/json");
         return new Gson().toJson(bodyObj);
     };
-    public Object registerUser(Request req, Response res) throws DataAccessException {
+    public Object registerUser(Request req, Response res) throws ResponseException {
         var user = new Gson().fromJson(req.body(), UserData.class);
         if (authService.getUser(user) == null) {
             user = authService.register(user);
             return new Gson().toJson(user);
         }
-        return new DataAccessException("Error: already taken");
+        else {
+            res.status(403);
+            return new Gson().toJson("flindlfskdf");
+        }
     }
 
-//    public void exceptionHandler(DataAccessException ex, Request req, Response res) {
-//        res.status(ex);
-//    }
+    public void exceptionHandler(ResponseException ex, Request req, Response res) {
+        res.status(ex.StatusCode());
+    }
 
     public Object loginUser(Request req, Response res) {
         var bodyObj = getBody(req, Map.class);

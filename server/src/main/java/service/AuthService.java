@@ -2,8 +2,11 @@ package service;
 
 import dataAccess.AuthDAO;
 import dataAccess.MemoryAuthDAO;
+import exception.ResponseException;
+import model.AuthData;
 import model.UserData;
-import dataAccess.DataAccessException;
+
+import java.util.UUID;
 
 public class AuthService {
 
@@ -12,10 +15,20 @@ public class AuthService {
          dataAccess = new MemoryAuthDAO();
     }
 
-    public UserData getUser(UserData user) throws DataAccessException {
+    public UserData getUser(UserData user) throws ResponseException {
         return dataAccess.selectUser(user);
     }
-    public UserData register(UserData user) throws DataAccessException{
-        return dataAccess.insertUser(user);
+
+    private String createAuthToken() {
+        final String authToken = UUID.randomUUID().toString();
+        return authToken;
+    }
+    public AuthData register(UserData user) throws ResponseException {
+        UserData insertedUser = dataAccess.insertUser(user);
+        AuthData newAuth = new AuthData(createAuthToken(), insertedUser.username());
+        AuthData insertedAuth = dataAccess.createToken(newAuth);
+        return insertedAuth;
     };
+
+
 }

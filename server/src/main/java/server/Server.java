@@ -3,6 +3,7 @@ package server;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
+import exception.ResponseException;
 import spark.*;
 
 public class Server {
@@ -25,7 +26,7 @@ public class Server {
         Spark.get("/game", (req, res) -> handler.listGames(req, res));
         Spark.post("/game", (req, res) -> handler.createGame(req, res));
         Spark.put("/game", (req, res) -> handler.joinGame(req, res));
-//        Spark.exception(DataAccessException.class, (ex, req, res) -> handler.exceptionHandler(ex, req, res));
+        Spark.exception(ResponseException.class, (ex, req, res) -> handler.exceptionHandler(ex, req, res));
 
         Spark.init();
         Spark.awaitInitialization();
