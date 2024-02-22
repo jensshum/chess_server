@@ -27,12 +27,24 @@ public class AuthService {
     public AuthData register(UserData user) throws ResponseException {
         UserData insertedUser = dataAccess.insertUser(user);
         AuthData newAuth = new AuthData(createAuthToken(), insertedUser.username());
-        AuthData insertedAuth = dataAccess.createToken(newAuth);
+        AuthData insertedAuth = dataAccess.insertToken(newAuth);
         return insertedAuth;
     };
 
-    public AuthData login(Map user) {
-        dataAccess.loginUser()
+    public AuthData login(UserData user) {
+        UserData loggedInUser = dataAccess.loginUser(user);
+        if (loggedInUser != null) {
+            String authToken = createAuthToken();
+            AuthData newAuth = new AuthData(authToken, loggedInUser.username());
+            return newAuth;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public void clearDatabase() {
+        dataAccess.clear();
     }
 
 

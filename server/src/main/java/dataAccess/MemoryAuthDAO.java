@@ -2,9 +2,11 @@ package dataAccess;
 
 import model.AuthData;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MemoryAuthDAO implements AuthDAO {
     private static int nextId = 1;
@@ -24,19 +26,40 @@ public class MemoryAuthDAO implements AuthDAO {
     @Override
     public UserData selectUser(UserData user) {
         for (Map.Entry<Integer, UserData> entry : users.entrySet()) {
-            if (entry.getValue().equals(user)) {
-                return entry.getValue();
+            UserData selectedUser = entry.getValue();
+            if (Objects.equals(entry.getValue().username(), user.username())) {
+                return selectedUser;
             }
         }
         return null;
     }
 
     @Override
-    public AuthData createToken(AuthData auth) {
+    public AuthData insertToken(AuthData auth) {
 
         authMap.put(authId, auth);
         authId++;
         return auth;
+    }
+
+    @Override
+    public UserData loginUser(UserData user) {
+
+        for (Map.Entry<Integer, UserData> entry : users.entrySet()) {
+            UserData userData = entry.getValue();
+            if (Objects.equals(userData.username(), user.username())) {
+                if (Objects.equals(userData.password(), user.password())) {
+                    return userData;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void clear() {
+        users.clear();
+        authMap.clear();
     }
 
 }
