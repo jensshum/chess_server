@@ -12,5 +12,6 @@ public interface AuthDAO {
     public AuthData insertToken(AuthData auth);
     public UserData loginUser(UserData user);
     public void clear();
-
+    public AuthData checkToken(AuthData auth);
+    public AuthData removeUser(AuthData auth);
 }

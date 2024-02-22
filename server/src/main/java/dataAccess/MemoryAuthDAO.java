@@ -5,6 +5,7 @@ import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -60,6 +61,27 @@ public class MemoryAuthDAO implements AuthDAO {
     public void clear() {
         users.clear();
         authMap.clear();
+    }
+
+    public AuthData checkToken(AuthData auth) {
+        for (Map.Entry<Integer, AuthData> entry : authMap.entrySet()) {
+            AuthData authData = entry.getValue();
+            if (Objects.equals(authData.authToken(), auth.authToken())) {
+                return authData;
+            }
+        }
+        return null;
+    };
+
+    public AuthData removeUser(AuthData auth) {
+        Iterator<Map.Entry<Integer, AuthData>> iterator = authMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, AuthData> entry = iterator.next();
+            if (entry.getValue().equals(auth)) {
+                iterator.remove();
+            }
+        }
+        return auth;
     }
 
 }

@@ -6,25 +6,29 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import service.AuthService;
+import service.GameService;
 import spark.Request;
 import spark.Response;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import exception.ResponseException;
 
 public class ServerHandler {
 
     private final AuthService authService;
+    private final GameService gameService;
 
     public ServerHandler() {
         authService = new AuthService();
+        gameService = new GameService();
     }
     public Object deleteAllGames(Request req, Response res)  {
         authService.clearDatabase();
         res.status(200);
-        return "";
+        return new Gson().toJson(new ErrorMessage(""));
     };
     public Object registerUser(Request req, Response res) throws ResponseException {
         var user = new Gson().fromJson(req.body(), UserData.class);
@@ -59,9 +63,18 @@ public class ServerHandler {
         }
     }
     public Object logoutUser(Request req, Response res) {
-        var bodyObj = getBody(req, Map.class);
-        res.type("application/json");
-        return new Gson().toJson(bodyObj);
+        String headers = req.headers("authorization");
+        AuthData auth = new AuthData(headers, "");
+        if (authService.verifyToken(auth) != null) {
+            res.status(200);
+            return "";
+        }
+        else {
+            res.status(401);
+            return new Gson().toJson(new ErrorMessage("Error: unauthorized"));
+        }
+//        return new Gson().toJson(headers);
+
     }
     public Object listGames(Request req, Response res) {
         var bodyObj = getBody(req, Map.class);

@@ -47,5 +47,15 @@ public class AuthService {
         dataAccess.clear();
     }
 
+    public AuthData verifyToken(AuthData auth) {
+        AuthData authUser = dataAccess.checkToken(auth);
+        if (authUser != null) {
+            return dataAccess.removeUser(authUser);
+        }
+        else {
+            return null;
+        }
+    }
+
 
 }
