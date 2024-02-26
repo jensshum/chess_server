@@ -1,6 +1,9 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
+import model.JoinGameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 
@@ -12,11 +15,12 @@ import java.util.Objects;
 public class MemoryAuthDAO implements AuthDAO {
     private static int nextId = 1;
     private static int authId = 1;
+    private static int gameId = 1;
     final static private HashMap<Integer, UserData> users = new HashMap<>();
     final static private HashMap<Integer, AuthData> authMap = new HashMap<>();
-//    public UserData registerUser(String username, String password, String email) {
-//        return new UserData(username, password, email);
-//    }
+    final static private HashMap<Integer, GameData> games = new HashMap<>();
+
+
     @Override
     public UserData insertUser(UserData newUser) {
         users.put(nextId, newUser);
@@ -63,6 +67,7 @@ public class MemoryAuthDAO implements AuthDAO {
         authMap.clear();
     }
 
+    @Override
     public AuthData checkToken(AuthData auth) {
         for (Map.Entry<Integer, AuthData> entry : authMap.entrySet()) {
             AuthData authData = entry.getValue();
@@ -73,6 +78,7 @@ public class MemoryAuthDAO implements AuthDAO {
         return null;
     };
 
+    @Override
     public AuthData removeUser(AuthData auth) {
         Iterator<Map.Entry<Integer, AuthData>> iterator = authMap.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -82,6 +88,34 @@ public class MemoryAuthDAO implements AuthDAO {
             }
         }
         return auth;
+    }
+
+    @Override
+    public GameData createGame(String gameName) {
+        ChessGame newChessGame = new ChessGame();
+        GameData game = new GameData(gameId, "", "", gameName, newChessGame);
+        games.put(gameId, game);
+        gameId++;
+        return game;
+    }
+
+    @Override
+    public HashMap<Integer, GameData> games() {
+        return games;
+    }
+
+    @Override
+    public GameData gameJoin(String username, JoinGameData joinGameData) {
+        for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
+            GameData gameEntry = entry.getValue();
+            if (Objects.equals(gameEntry.gameID(), joinGameData.gameID())) {
+                if (Objects.equals(joinGameData.playerColor(), "BLACK")) {
+                    gameEntry.blackUsername();
+                }
+            }
+
+        }
+        return null;
     }
 
 }

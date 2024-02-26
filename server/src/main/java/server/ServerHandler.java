@@ -3,16 +3,13 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import model.AuthData;
-import model.UserData;
+import model.*;
 import service.AuthService;
 import service.GameService;
 import spark.Request;
 import spark.Response;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import exception.ResponseException;
 
@@ -52,7 +49,6 @@ public class ServerHandler {
 
     public Object loginUser(Request req, Response res) {
         var user = new Gson().fromJson(req.body(), UserData.class);
-
         AuthData newAuth = authService.login(user);
         if (newAuth == null) {
             res.status(401);
@@ -77,19 +73,51 @@ public class ServerHandler {
 
     }
     public Object listGames(Request req, Response res) {
-        var bodyObj = getBody(req, Map.class);
-        res.type("application/json");
-        return new Gson().toJson(bodyObj);
+        String authToken = req.headers("authorization");
+        AuthData auth = new AuthData(authToken, "");
+        if (authService.verifyToken(auth) != null) {
+            HashMap<Integer, GameData> games = gameService.getGames();
+            return new Gson().toJson(games);
+        }
+        else {
+            res.status(401);
+            return new Gson().toJson(new ErrorMessage("Error: unauthorized"));
+        }
     }
     public Object createGame(Request req, Response res) {
-        var bodyObj = getBody(req, Map.class);
-        res.type("application/json");
-        return new Gson().toJson(bodyObj);
+
+        String authToken = req.headers("authorization");
+        var game = new Gson().fromJson(req.body(), GameData.class);
+        if (Objects.equals(game.gameName(), "") || Objects.equals(game.gameName(), null)){
+            res.status(400);
+            return new Gson().toJson(new ErrorMessage("Error: bad request"));
+        }
+        GameData gameDataObj = gameService.createGame(authToken, game);
+        if (gameDataObj != null) {
+            GameIdData gameIdObj = new GameIdData(gameDataObj.gameID());
+            return new Gson().toJson(gameIdObj);
+        }
+        else {
+            res.status(401);
+            return new Gson().toJson(new ErrorMessage("Error: unauthorized"));
+        }
     }
     public Object joinGame(Request req, Response res) {
-        var bodyObj = getBody(req, Map.class);
-        res.type("application/json");
-        return new Gson().toJson(bodyObj);
+        String authToken = req.headers("authorization");
+        AuthData auth = new AuthData(authToken, "");
+        var joinGameData = new Gson().fromJson(req.body(), JoinGameData.class);
+        if (Objects.equals(joinGameData.playerColor(), "") || Objects.equals(joinGameData.gameID(), 0) || Objects.equals(joinGameData.playerColor(), null)){
+            res.status(400);
+            return new Gson().toJson(new ErrorMessage("Error: bad request"));
+        }
+        if (authService.verifyToken(auth) != null) {
+            gameService.joinGame(auth.username(), joinGameData);
+        }
+        else {
+            res.status(401);
+            return new Gson().toJson(new ErrorMessage("Error: unauthorized"));
+        }
+        return null;
     }
 
     private static <T> T getBody(Request req, Class<T> clazz) {
