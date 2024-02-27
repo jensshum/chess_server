@@ -132,14 +132,18 @@ public GameData gameJoin(String username, JoinGameData joinGameData) {
         int gameEntryID = gameEntry.getGameID();
         int joinGameID = joinGameData.gameID();
         if (gameEntry.getGameID() == joinGameData.gameID()) {
-            gameEntry.setBlackUsername(null);
-            gameEntry.setWhiteUsername(null);
+            String blackUsername = gameEntry.getBlackUsername();
+            String whiteUsername = gameEntry.getWhiteUsername();
+            if (blackUsername == "") {
+                gameEntry.setBlackUsername(null);
+            }
+            if (whiteUsername == "") {
+                gameEntry.setWhiteUsername(null);
+            }
             if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.BLACK)) {
-                String blackUsername = gameEntry.getBlackUsername();
                 gameEntry.setBlackUsername(username);
             }
             else if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.WHITE)){
-                String whiteUsername = gameEntry.getWhiteUsername();
                 gameEntry.setWhiteUsername(username);
             }
             // Logic to join the game
