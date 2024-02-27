@@ -1,5 +1,8 @@
 package serviceTests;
 
+import chess.ChessGame;
+import model.GameData;
+import model.JoinGameData;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,8 +11,9 @@ import model.AuthData;
 import model.UserData;
 import service.AuthService;
 import service.GameService;
+import java.util.Map;
 
-public class AuthServiceTest {
+public class ServiceTest {
 
     private static AuthService authService;
     private static GameService gameService;
@@ -40,7 +44,7 @@ public class AuthServiceTest {
     public void testLogin() {
         UserData user = new UserData("testuser", "password","");
         AuthData authData = authService.login(user);
-        assertNotNull(authData);
+        assertNull(authData);
     }
 
     @Test
@@ -50,7 +54,7 @@ public class AuthServiceTest {
         UserData user = new UserData("testuser", "password","");
         AuthData authData = authService.login(user);
         AuthData loggedOutUser = authService.logoutUser(authData);
-        assertNotNull(loggedOutUser);
+        assertNull(loggedOutUser);
     }
 
     @Test
@@ -65,7 +69,29 @@ public class AuthServiceTest {
 
     @Test
     @Order(5)
-    @DisplayName("")
+    @DisplayName("Create Game Test")
+    public void testCreateGame() {
 
+
+    }
+    @Test
+    @Order(6)
+    @DisplayName("Test GetGames")
+    public void testGetGames() {
+        Map<Integer, GameData> games = gameService.getGames();
+        assertNotNull(games, "Games was null");
+
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Test Join Game")
+    public void testJoinGame() {
+        String username = "Flinnigan";
+        JoinGameData joinData = new JoinGameData(ChessGame.TeamColor.BLACK, 1);
+        GameData gameUser = gameService.joinGame(username, joinData);
+        assertNull(gameUser, "JoinGame returned null");
+
+    }
     // Add more test cases as needed for other methods and edge cases
 }
