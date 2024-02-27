@@ -37,7 +37,8 @@ public class AuthService {
         if (loggedInUser != null) {
             String authToken = createAuthToken();
             AuthData newAuth = new AuthData(authToken, loggedInUser.username());
-            return newAuth;
+            AuthData insertedAuth = dataAccess.insertToken(newAuth);
+            return insertedAuth;
         }
         else {
             return null;

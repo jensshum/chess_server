@@ -50,6 +50,7 @@ public class MemoryAuthDAO implements AuthDAO {
     @Override
     public UserData loginUser(UserData user) {
 
+
         for (Map.Entry<Integer, UserData> entry : users.entrySet()) {
             UserData userData = entry.getValue();
             if (Objects.equals(userData.username(), user.username())) {
@@ -82,10 +83,14 @@ public class MemoryAuthDAO implements AuthDAO {
     @Override
     public AuthData removeUser(AuthData auth) {
         Iterator<Map.Entry<Integer, AuthData>> iterator = authMap.entrySet().iterator();
+        int numEntries = authMap.size();
         while (iterator.hasNext()) {
             Map.Entry<Integer, AuthData> entry = iterator.next();
-            if (entry.getValue().equals(auth)) {
+            if (entry.getValue().authToken().equals(auth.authToken())) {
                 iterator.remove();
+//                authMap.put(entry.getKey(), new AuthData("", entry.getValue().username()));
+                int entryNum = entry.getKey();
+                String entryUsername = entry.getValue().username();
             }
         }
         return auth;
@@ -141,10 +146,20 @@ public GameData gameJoin(String username, JoinGameData joinGameData) {
                 gameEntry.setWhiteUsername(null);
             }
             if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.BLACK)) {
-                gameEntry.setBlackUsername(username);
+                if (gameEntry.getBlackUsername() == null) {
+                    gameEntry.setBlackUsername(username);
+                }
+                else {
+                    return null;
+                }
             }
             else if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.WHITE)){
-                gameEntry.setWhiteUsername(username);
+                if (gameEntry.getWhiteUsername() == null) {
+                    gameEntry.setWhiteUsername(username);
+                }
+                else {
+                    return null;
+                }
             }
             // Logic to join the game
             return gameEntry; // Found and joined the game, so return
