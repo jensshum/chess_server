@@ -65,6 +65,7 @@ public class MemoryAuthDAO implements AuthDAO {
     public void clear() {
         users.clear();
         authMap.clear();
+        games.clear();
     }
 
     @Override
@@ -104,18 +105,48 @@ public class MemoryAuthDAO implements AuthDAO {
         return games;
     }
 
-    @Override
-    public GameData gameJoin(String username, JoinGameData joinGameData) {
-        for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
-            GameData gameEntry = entry.getValue();
-            if (Objects.equals(gameEntry.gameID(), joinGameData.gameID())) {
-                if (Objects.equals(joinGameData.playerColor(), "BLACK")) {
-                    gameEntry.blackUsername();
-                }
+//    @Override
+//    public GameData gameJoin(String username, JoinGameData joinGameData) {
+//        int gamesSize = games.size();
+//        for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
+//            GameData gameEntry = entry.getValue();
+//            int gameEntryID = gameEntry.getGameID();
+//            int joinGameID = joinGameData.gameID();
+//            if (gameEntry.getGameID() == joinGameData.gameID()) {
+//                if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.BLACK)) {
+//                    gameEntry.setBlackUsername(username);
+//                }
+//                else{
+//                    gameEntry.setWhiteUsername(username);
+//                }
+//            }
+//            else {
+//                return new GameData(joinGameData.gameID(), "NO MATCH", "", gameEntry.getGameName(), null);
+//            }
+//        }
+//        return new GameData(joinGameData.gameID(), "NO MATCH", "", games.values().toString() , null);
+//    }
+public GameData gameJoin(String username, JoinGameData joinGameData) {
+    for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
+        GameData gameEntry = entry.getValue();
+        int gameEntryID = gameEntry.getGameID();
+        int joinGameID = joinGameData.gameID();
+        if (gameEntry.getGameID() == joinGameData.gameID()) {
+            gameEntry.setBlackUsername(null);
+            gameEntry.setWhiteUsername(null);
+            if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.BLACK)) {
+                String blackUsername = gameEntry.getBlackUsername();
+                gameEntry.setBlackUsername(username);
             }
-
+            else if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.WHITE)){
+                String whiteUsername = gameEntry.getWhiteUsername();
+                gameEntry.setWhiteUsername(username);
+            }
+            // Logic to join the game
+            return gameEntry; // Found and joined the game, so return
         }
-        return null;
     }
-
+    // After the loop, if no game was found
+    return null;
+    }
 }

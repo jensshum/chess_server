@@ -5,6 +5,7 @@ import dataAccess.MemoryAuthDAO;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
+import org.eclipse.jetty.client.AuthenticationProtocolHandler;
 
 import java.util.Map;
 import java.util.UUID;
@@ -48,6 +49,16 @@ public class AuthService {
     }
 
     public AuthData verifyToken(AuthData auth) {
+        AuthData authUser = dataAccess.checkToken(auth);
+        if (authUser == null) {
+            return null;
+        }
+        else {
+            return authUser;
+        }
+    }
+
+    public AuthData logoutUser(AuthData auth) {
         AuthData authUser = dataAccess.checkToken(auth);
         if (authUser != null) {
             return dataAccess.removeUser(authUser);

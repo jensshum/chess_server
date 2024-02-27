@@ -61,7 +61,7 @@ public class ServerHandler {
     public Object logoutUser(Request req, Response res) {
         String headers = req.headers("authorization");
         AuthData auth = new AuthData(headers, "");
-        if (authService.verifyToken(auth) != null) {
+        if (authService.logoutUser(auth) != null) {
             res.status(200);
             return "";
         }
@@ -77,7 +77,8 @@ public class ServerHandler {
         AuthData auth = new AuthData(authToken, "");
         if (authService.verifyToken(auth) != null) {
             HashMap<Integer, GameData> games = gameService.getGames();
-            return new Gson().toJson(games);
+            GamesListFromHashMap gameList = new GamesListFromHashMap(games);
+            return new Gson().toJson(gameList);
         }
         else {
             res.status(401);
@@ -88,13 +89,13 @@ public class ServerHandler {
 
         String authToken = req.headers("authorization");
         var game = new Gson().fromJson(req.body(), GameData.class);
-        if (Objects.equals(game.gameName(), "") || Objects.equals(game.gameName(), null)){
+        if (Objects.equals(game.getGameName(), "") || Objects.equals(game.getGameName(), null)){
             res.status(400);
             return new Gson().toJson(new ErrorMessage("Error: bad request"));
         }
         GameData gameDataObj = gameService.createGame(authToken, game);
         if (gameDataObj != null) {
-            GameIdData gameIdObj = new GameIdData(gameDataObj.gameID());
+            GameIdData gameIdObj = new GameIdData(gameDataObj.getGameID());
             return new Gson().toJson(gameIdObj);
         }
         else {
@@ -106,25 +107,27 @@ public class ServerHandler {
         String authToken = req.headers("authorization");
         AuthData auth = new AuthData(authToken, "");
         var joinGameData = new Gson().fromJson(req.body(), JoinGameData.class);
-        if (Objects.equals(joinGameData.playerColor(), "") || Objects.equals(joinGameData.gameID(), 0) || Objects.equals(joinGameData.playerColor(), null)){
+        if (Objects.equals(joinGameData.gameID(), 0)){
             res.status(400);
             return new Gson().toJson(new ErrorMessage("Error: bad request"));
         }
-        if (authService.verifyToken(auth) != null) {
-            gameService.joinGame(auth.username(), joinGameData);
+        AuthData authUser = authService.verifyToken(auth);
+        if (authUser != null) {
+            GameData gameygame = gameService.joinGame(authUser.username(), joinGameData);
+            if (gameygame == null) {
+                res.status(403);
+                return new Gson().toJson(new ErrorMessage("Error: already taken"));
+            }
+            else {
+                return "";
+            }
         }
         else {
             res.status(401);
             return new Gson().toJson(new ErrorMessage("Error: unauthorized"));
         }
-        return null;
+
     }
 
-    private static <T> T getBody(Request req, Class<T> clazz) {
-        var body = new Gson().fromJson(req.body(), clazz);
-        if (body == null) {
-            throw new RuntimeException("missing argument body");
-        }
-        return body;
-    }
+
 }

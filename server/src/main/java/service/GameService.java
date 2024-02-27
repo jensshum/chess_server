@@ -19,7 +19,7 @@ public class GameService {
     public GameData createGame(String authToken, GameData game) {
         AuthData auth = new AuthData(authToken, "");
         if (dataAccess.checkToken(auth) != null) {
-            GameData gameObj = dataAccess.createGame(game.gameName());
+            GameData gameObj = dataAccess.createGame(game.getGameName());
             return gameObj;
         }
         else
