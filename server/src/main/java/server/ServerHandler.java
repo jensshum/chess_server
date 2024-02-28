@@ -41,9 +41,6 @@ public class ServerHandler {
         }
     }
 
-    public void exceptionHandler(ResponseException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
-    }
 
     public Object loginUser(Request req, Response res) {
         var user = new Gson().fromJson(req.body(), UserData.class);
