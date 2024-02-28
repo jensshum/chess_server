@@ -6,12 +6,7 @@ import java.util.Objects;
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 
-/**
- * Represents a single chess piece
- * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
- */
+
 public class ChessPiece implements Cloneable{
 
     private PieceType pieceType;
@@ -46,9 +41,7 @@ public class ChessPiece implements Cloneable{
         this.pieceColor = pieceColor;
     }
 
-    /**
-     * The various different chess piece options
-     */
+
     public enum PieceType {
         KING,
         QUEEN,
@@ -58,28 +51,16 @@ public class ChessPiece implements Cloneable{
         PAWN
     }
 
-    /**
-     * @return Which team this chess piece belongs to
-     */
+
     public ChessGame.TeamColor getTeamColor() {
         return pieceColor;
     }
 
-    /**
-     * @return which type of chess piece this piece is
-     */
     public PieceType getPieceType() {
         return pieceType;
     }
 
-    /**
-     * Calculates all the positions a chess piece can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     *
-     */
+
 
     private void addAxialMoves(ChessBoard board, ChessPosition myPosition, int rowIncrement, int colIncrement, Collection<ChessMove> legalMoves, boolean singleMove){
         int tempRow = myPosition.getRow();
@@ -123,25 +104,6 @@ public class ChessPiece implements Cloneable{
     }
 
 
-//    private void addPawnMoves(ChessBoard board, ChessPosition myPosition, int rowIncrement, int colIncrement, Collection<ChessMove> legalMoves) {
-//        int tempRow = myPosition.getRow();
-//        int tempCol = myPosition.getColumn();
-//
-//        tempRow += rowIncrement;
-//        tempCol += colIncrement;
-//        if (tempRow >= 1 && tempRow <= 8 && tempCol >= 1 && tempCol <= 8) {
-//            ChessPosition newPosition = new ChessPosition(tempRow, tempCol);
-//            if (board.getPiece(newPosition) == null) {
-//                legalMoves.add(new ChessMove(myPosition, newPosition, null));
-//            }
-//            else {
-//                // If the position is occupied by an opposite color piece, it's a valid move,
-//                if (board.getPiece(newPosition).getTeamColor() != this.pieceColor) {
-//                    legalMoves.add(new ChessMove(myPosition, newPosition, null));
-//                }
-//            }
-//        }
-//    }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> legalBishopMoves = new HashSet<>();
@@ -345,14 +307,7 @@ public class ChessPiece implements Cloneable{
                 legalMoves = pawnMoves(board, myPosition);
                 break;
         }
-        // Bishop can only move in a diagonal line, +-1 to row, +-1 to col.
-        // If the row == 8||1 the column should not increase or decrease
-        // If the column == 8||1 the row should not increase or decrease
-//        for (int i=myPosition.getColumn()+1; i<9; i++){
-//            for (int j=myPosition.getRow()+1; j<9; j++) {
-//                legalMoves.add(new ChessMove(myPosition, new ChessPosition(j,i),pieceType));
-//                break;
-//
+
         return legalMoves;
 
     }

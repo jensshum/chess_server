@@ -6,17 +6,13 @@ public class GamesListFromHashMap {
 
     private List<GameData> games = new ArrayList<>();
 
-    public GamesListFromHashMap(HashMap<Integer, GameData> games_) {
-        if (games_ != null) {
-            for (Map.Entry<Integer, GameData> entry : games_.entrySet()) {
+    public GamesListFromHashMap(HashMap<Integer, GameData> gamesMap) {
+        if (gamesMap != null) {
+            for (Map.Entry<Integer, GameData> entry : gamesMap.entrySet()) {
                 GameData gameEntry = entry.getValue();
                 games.add(gameEntry);
             }
         }
-    }
-
-    public List<GameData> getGames() {
-        return games;
     }
 }
 
