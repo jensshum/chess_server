@@ -34,7 +34,6 @@ public class GameService {
 
     public GameData joinGame(String username, JoinGameData joinGameData) {
         return dataAccess.gameJoin(username, joinGameData);
-
     }
 
 
