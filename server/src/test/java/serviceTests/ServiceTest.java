@@ -25,7 +25,7 @@ public class ServiceTest {
     }
 
     @AfterAll
-    public static void tearDown() {
+    public static void tearDown() throws Exception{
         authService.clearDatabase();
     }
 
@@ -42,7 +42,7 @@ public class ServiceTest {
     @Test
     @Order(2)
     @DisplayName("Test Duplicate User Register")
-    public void testDuplicateRegister() throws ResponseException {
+    public void testDuplicateRegister() throws Exception {
         UserData user2 = new UserData("testuser", "password", "email");
         UserData userCheck = authService.getUser(user2);
         assertNull(userCheck);
@@ -52,7 +52,7 @@ public class ServiceTest {
     @Test
     @Order(3)
     @DisplayName("Test Login User")
-    public void testLogin() {
+    public void testLogin() throws Exception{
         UserData user = new UserData("testuser", "password","");
         AuthData authData = authService.login(user);
         assertNull(authData);
@@ -62,7 +62,7 @@ public class ServiceTest {
     @Test
     @Order(4)
     @DisplayName("Test logout user")
-    public void testLogoutUser() {
+    public void testLogoutUser() throws Exception{
         UserData user = new UserData("testuser", "password","");
         AuthData authData = authService.login(user);
         AuthData loggedOutUser = authService.logoutUser(authData);
@@ -72,7 +72,7 @@ public class ServiceTest {
     @Test
     @Order(5)
     @DisplayName("Test Verify Token")
-    public void testVerifyToken() {
+    public void testVerifyToken() throws Exception{
         UserData user = new UserData("testuser", "password","");
         AuthData authData = authService.login(user);
         AuthData verifiedToken = authService.verifyToken(authData);
@@ -110,7 +110,7 @@ public class ServiceTest {
     @Test
     @Order(9)
     @DisplayName("Test invalid login")
-    public void invalidUsernameLogin() {
+    public void invalidUsernameLogin() throws Exception{
         String username = "Unregistered Username";
         String password = "Unregistered password";
         AuthData invalidUser = authService.login(new UserData(username,password, ""));
@@ -131,7 +131,7 @@ public class ServiceTest {
     @Test
     @Order(11)
     @DisplayName("Bad Game Create")
-    public void badGameCreate() {
+    public void badGameCreate() throws Exception {
         String authToken = "Bad auth token";
         GameData badGame = new GameData(0, "","","badGame",null);
         assertNull(gameService.createGame(authToken,badGame));
@@ -141,7 +141,7 @@ public class ServiceTest {
     @Test
     @Order(12)
     @DisplayName("Bad logout")
-    public void badLogout() {
+    public void badLogout() throws Exception{
         String badToken = "Bad Token";
         assertNull(authService.logoutUser(new AuthData(badToken, "")));
     }

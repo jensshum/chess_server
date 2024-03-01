@@ -1,6 +1,7 @@
 package service;
 
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import dataAccess.SQLAuthDAO;
 import exception.ResponseException;
@@ -18,7 +19,7 @@ public class AuthService {
          dataAccess = new SQLAuthDAO();
     }
 
-    public UserData getUser(UserData user) throws ResponseException {
+    public UserData getUser(UserData user) throws Exception {
         return dataAccess.selectUser(user);
     }
 
@@ -33,7 +34,7 @@ public class AuthService {
         return insertedAuth;
     };
 
-    public AuthData login(UserData user) {
+    public AuthData login(UserData user) throws Exception{
         UserData loggedInUser = dataAccess.loginUser(user);
         if (loggedInUser != null) {
             String authToken = createAuthToken();
@@ -46,11 +47,11 @@ public class AuthService {
         }
     }
 
-    public void clearDatabase() {
+    public void clearDatabase() throws DataAccessException {
         dataAccess.clear();
     }
 
-    public AuthData verifyToken(AuthData auth) {
+    public AuthData verifyToken(AuthData auth) throws Exception{
         AuthData authUser = dataAccess.checkToken(auth);
         if (authUser == null) {
             return null;
@@ -60,7 +61,7 @@ public class AuthService {
         }
     }
 
-    public AuthData logoutUser(AuthData auth) {
+    public AuthData logoutUser(AuthData auth) throws Exception{
         AuthData authUser = dataAccess.checkToken(auth);
         if (authUser != null) {
             return dataAccess.removeUser(authUser);

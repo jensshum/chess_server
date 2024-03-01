@@ -20,7 +20,7 @@ public class ServerHandler {
         authService = new AuthService();
         gameService = new GameService();
     }
-    public Object deleteAllGames(Request req, Response res)  {
+    public Object deleteAllGames(Request req, Response res)  throws Exception{
         authService.clearDatabase();
         res.status(200);
         return new Gson().toJson(new ErrorMessage(""));
@@ -42,7 +42,7 @@ public class ServerHandler {
     }
 
 
-    public Object loginUser(Request req, Response res) {
+    public Object loginUser(Request req, Response res) throws Exception{
         var user = new Gson().fromJson(req.body(), UserData.class);
         AuthData newAuth = authService.login(user);
         if (newAuth == null) {
@@ -53,7 +53,7 @@ public class ServerHandler {
             return new Gson().toJson(newAuth);
         }
     }
-    public Object logoutUser(Request req, Response res) {
+    public Object logoutUser(Request req, Response res) throws Exception{
         String headers = req.headers("authorization");
         AuthData auth = new AuthData(headers, "");
         if (authService.logoutUser(auth) != null) {
@@ -67,7 +67,7 @@ public class ServerHandler {
 //        return new Gson().toJson(headers);
 
     }
-    public Object listGames(Request req, Response res) {
+    public Object listGames(Request req, Response res) throws Exception{
         String authToken = req.headers("authorization");
         AuthData auth = new AuthData(authToken, "");
         if (authService.verifyToken(auth) != null) {
@@ -80,7 +80,7 @@ public class ServerHandler {
             return new Gson().toJson(new ErrorMessage("Error: unauthorized"));
         }
     }
-    public Object createGame(Request req, Response res) {
+    public Object createGame(Request req, Response res) throws Exception {
 
         String authToken = req.headers("authorization");
         var game = new Gson().fromJson(req.body(), GameData.class);
@@ -98,7 +98,7 @@ public class ServerHandler {
             return new Gson().toJson(new ErrorMessage("Error: unauthorized"));
         }
     }
-    public Object joinGame(Request req, Response res) {
+    public Object joinGame(Request req, Response res) throws Exception {
         String authToken = req.headers("authorization");
         AuthData auth = new AuthData(authToken, "");
         var joinGameData = new Gson().fromJson(req.body(), JoinGameData.class);
