@@ -1,7 +1,11 @@
 package dataAccess;
 
 import java.sql.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
+
+import static java.sql.Types.NULL;
 
 public class DatabaseManager {
     private static final String databaseName;
@@ -67,4 +71,8 @@ public class DatabaseManager {
             throw new DataAccessException(e.getMessage());
         }
     }
+
+
+
+
 }

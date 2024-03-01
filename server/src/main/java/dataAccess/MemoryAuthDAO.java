@@ -7,6 +7,7 @@ import model.JoinGameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class MemoryAuthDAO implements AuthDAO {
     final static private HashMap<Integer, UserData> users = new HashMap<>();
     final static private HashMap<Integer, AuthData> authMap = new HashMap<>();
     final static private HashMap<Integer, GameData> games = new HashMap<>();
+
 
 
     @Override

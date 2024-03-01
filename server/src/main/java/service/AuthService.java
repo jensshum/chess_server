@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.AuthDAO;
 import dataAccess.MemoryAuthDAO;
+import dataAccess.SQLAuthDAO;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
@@ -14,7 +15,7 @@ public class AuthService {
 
     private AuthDAO dataAccess;
     public AuthService() {
-         dataAccess = new MemoryAuthDAO();
+         dataAccess = new SQLAuthDAO();
     }
 
     public UserData getUser(UserData user) throws ResponseException {
@@ -25,7 +26,7 @@ public class AuthService {
         final String authToken = UUID.randomUUID().toString();
         return authToken;
     }
-    public AuthData register(UserData user) throws ResponseException {
+    public AuthData register(UserData user) throws Exception {
         UserData insertedUser = dataAccess.insertUser(user);
         AuthData newAuth = new AuthData(createAuthToken(), insertedUser.username());
         AuthData insertedAuth = dataAccess.insertToken(newAuth);

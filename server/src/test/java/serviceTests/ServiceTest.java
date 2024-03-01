@@ -32,7 +32,7 @@ public class ServiceTest {
     @Test
     @Order(1)
     @DisplayName("Test Register User")
-    public void testRegister() throws ResponseException {
+    public void testRegister() throws Exception {
         UserData user = new UserData("testuser", "password", "email");
         AuthData authData = authService.register(user);
         assertNotNull(authData);

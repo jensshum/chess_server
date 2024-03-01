@@ -5,13 +5,16 @@ import model.GameData;
 import model.JoinGameData;
 import model.UserData;
 
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.jetty.server.Authentication;
 
+import javax.xml.crypto.Data;
+
 public interface AuthDAO {
 
-    public UserData insertUser(UserData user);
+    public UserData insertUser(UserData user) throws Exception;
     public UserData selectUser(UserData user);
     public AuthData insertToken(AuthData auth);
     public UserData loginUser(UserData user);

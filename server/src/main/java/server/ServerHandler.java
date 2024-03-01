@@ -25,7 +25,7 @@ public class ServerHandler {
         res.status(200);
         return new Gson().toJson(new ErrorMessage(""));
     };
-    public Object registerUser(Request req, Response res) throws ResponseException {
+    public Object registerUser(Request req, Response res) throws Exception {
         var user = new Gson().fromJson(req.body(), UserData.class);
         if (Objects.equals(user.username(), "") || Objects.equals(user.password(), "") || Objects.equals(user.email(), "") || Objects.equals(user.username(), null) || Objects.equals(user.password(), null) || Objects.equals(user.email(), null)){
             res.status(400);
