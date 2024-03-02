@@ -34,7 +34,7 @@ public class SQLAuthTests {
 
     @AfterAll
     public static void breakDown() throws Exception {
-        sqlAuthDAO.clear();
+//        sqlAuthDAO.clear();
     }
 
     @Test
@@ -112,7 +112,7 @@ public class SQLAuthTests {
     @DisplayName("Check valid token")
     public void checkValidToken() throws Exception {
         sqlAuthDAO.clear();
-        AuthData newAuth = new AuthData(createAuthToken(), "jensshum");
+        AuthData newAuth = new AuthData(createAuthToken(), "");
         sqlAuthDAO.insertToken(newAuth);
         assertNotNull(sqlAuthDAO.checkToken(newAuth));
     }
@@ -122,10 +122,23 @@ public class SQLAuthTests {
     @DisplayName("Check logout")
     public void validLogout() throws Exception {
         sqlAuthDAO.clear();
-        AuthData newAuth = new AuthData(createAuthToken(), "jensshum");
-        sqlAuthDAO.insertToken(newAuth);
-        assertNotNull(sqlAuthDAO.removeUser(newAuth));
+        AuthData newAuth = new AuthData(createAuthToken(), "auth_token");
+        AuthData thing = sqlAuthDAO.insertToken(newAuth);
+        System.out.println(thing);
+        AuthData newThing = sqlAuthDAO.removeUser(newAuth);
+        System.out.println(newThing);
+        assertNotNull(newThing);
     }
+
+    @Test
+    @Order(10)
+    @DisplayName("Create Game")
+    public void createGame() throws Exception {
+        sqlAuthDAO.clear();
+        sqlAuthDAO.createGame("cloopy");
+        assertNotNull(sqlAuthDAO.createGame("Prloopy"));
+    }
+
 
 
 

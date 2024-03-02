@@ -21,7 +21,7 @@ public interface AuthDAO {
     public void clear() throws DataAccessException;
     public AuthData checkToken(AuthData auth) throws Exception;
     public AuthData removeUser(AuthData auth) throws Exception;
-    public GameData createGame(String gameName);
+    public GameData createGame(String gameName) throws Exception;
     public HashMap<Integer, GameData> games();
     public GameData gameJoin(String username, JoinGameData joinGameData);
 }

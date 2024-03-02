@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DatabaseManager;
 import model.AuthData;
@@ -103,7 +104,7 @@ public class SQLAuthDAO implements AuthDAO{
                         "white_username VARCHAR(100) NOT NULL, " +
                         "black_username VARCHAR(100) NOT NULL, " +
                         "game_name VARCHAR(100) NOT NULL, " +
-                        "game VARCHAR(100) NOT NULL, " +
+                        "game TEXT NOT NULL, " +
                         "json TEXT NOT NULL" +
                         ")";
                 case null, default -> "";
@@ -191,8 +192,14 @@ public class SQLAuthDAO implements AuthDAO{
         return null;
     };
     public AuthData checkToken(AuthData auth) throws Exception {
-        AuthData foundAuth = selectAuth(auth, "username");
-        return foundAuth;
+        if (!Objects.equals(auth.username(), "")) {
+            AuthData foundAuth = selectAuth(auth, "username");
+            return foundAuth;
+        }
+        else {
+            AuthData foundAuth = selectAuth(auth, "auth_token");
+            return foundAuth;
+        }
     };
     public AuthData removeUser(AuthData auth)throws Exception{
         AuthData foundAuth = selectAuth(auth, "auth_token");
@@ -202,8 +209,49 @@ public class SQLAuthDAO implements AuthDAO{
         }
         return foundAuth;
     };
-    public GameData createGame(String gameName){return null;};
-    public HashMap<Integer, GameData> games(){return null;};
-    public GameData gameJoin(String username, JoinGameData joinGameData){return null;};
+
+    private GameData readGame(ResultSet rs) throws SQLException {
+        var json = rs.getString("json");
+        var game = new Gson().fromJson(json, GameData.class);
+        return game;
+    }
+
+    private GameData selectGame(String gameName) throws Exception {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM games_table WHERE game_name = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, gameName);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+        return null;
+    };
+    public GameData createGame(String gameName) throws Exception {
+        ChessGame newChessGame = new ChessGame();
+        GameData checkGame = selectGame(gameName);
+        int gameId;
+        if (checkGame == null) {
+            gameId = 1;
+        }
+        else {
+            gameId = checkGame.getGameID() + 1;
+        }
+        GameData game = new GameData(gameId, "", "", gameName, newChessGame);
+        var chessGameJson = new Gson().toJson(newChessGame);
+        var json = new Gson().toJson(game);
+        var insertStatement = "INSERT INTO games_table (game_id, white_username, black_username, game_name, game, json) VALUES (?, ?, ?, ?, ?, ?)";
+        executeUpdate(insertStatement, gameId, "", "", gameName, chessGameJson, json);
+        return game;
+    };
+    public HashMap<Integer, GameData> games() {
+        return null;
+    };
+    public GameData gameJoin(String username, JoinGameData joinGameData) {return null;};
 
 }
