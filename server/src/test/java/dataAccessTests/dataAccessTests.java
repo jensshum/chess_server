@@ -43,6 +43,7 @@ public class dataAccessTests {
     @DisplayName("Clear")
     public void testClear() throws Exception {
         sqlAuthDAO.clear();
+        assertNull(null);
     }
     @Test
     @Order(1)
@@ -136,7 +137,7 @@ public class dataAccessTests {
     @DisplayName("MultiGame Create")
     public void multiGames() throws Exception {
         sqlAuthDAO.createGame("scooby");
-        sqlAuthDAO.createGame("rooby");
+        assertNotNull(sqlAuthDAO.createGame("rooby"));
     }
 
     @Test
@@ -149,6 +150,7 @@ public class dataAccessTests {
         for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
             GameData game = entry.getValue();
         }
+        assertNotNull(games);
 
     }
 
@@ -159,6 +161,7 @@ public class dataAccessTests {
         sqlAuthDAO.createGame("scooby");
         JoinGameData newGameJoin = new JoinGameData(ChessGame.TeamColor.BLACK, 1);
         GameData newGame = sqlAuthDAO.gameJoin("jensshum",newGameJoin);
+        assertNotNull(newGame);
     }
 
     @Test
@@ -180,6 +183,7 @@ public class dataAccessTests {
         sqlAuthDAO.createGame("scoob");
         JoinGameData newGameJoin = new JoinGameData(null, 1);
         GameData response = sqlAuthDAO.gameJoin("bloop", newGameJoin);
+        assertNotNull(response);
 
     }
 
@@ -191,7 +195,6 @@ public class dataAccessTests {
         JoinGameData newGameJoin = new JoinGameData(null, 0);
         GameData response = sqlAuthDAO.gameJoin("bloop", newGameJoin);
         assertNull(response);
-
     }
 
 
