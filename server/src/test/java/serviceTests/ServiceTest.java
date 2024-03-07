@@ -99,7 +99,7 @@ public class ServiceTest {
     @Test
     @Order(8)
     @DisplayName("Test Join Game")
-    public void testJoinGame() {
+    public void testJoinGame() throws Exception{
         String username = "Flinnigan";
         JoinGameData joinData = new JoinGameData(ChessGame.TeamColor.BLACK, 1);
         GameData gameUser = gameService.joinGame(username, joinData);
@@ -120,7 +120,7 @@ public class ServiceTest {
     @Test
     @Order(10)
     @DisplayName("Test Join with Invalid Game Id")
-    public void invalidGameId() {
+    public void invalidGameId() throws Exception {
         int id = 0;
         String username = "Invalidjoingame";
         JoinGameData badJoin = new JoinGameData(ChessGame.TeamColor.BLACK, id);

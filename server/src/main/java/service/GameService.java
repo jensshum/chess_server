@@ -33,7 +33,7 @@ public class GameService {
         return dataAccess.games();
     }
 
-    public GameData joinGame(String username, JoinGameData joinGameData) {
+    public GameData joinGame(String username, JoinGameData joinGameData) throws Exception{
         return dataAccess.gameJoin(username, joinGameData);
     }
 

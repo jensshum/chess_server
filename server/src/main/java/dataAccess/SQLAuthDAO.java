@@ -19,6 +19,7 @@ import model.GameData;
 import model.JoinGameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
+import service.GameService;
 
 import javax.xml.crypto.Data;
 
@@ -60,22 +61,20 @@ public class SQLAuthDAO implements AuthDAO{
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException
     {
-        try {
-            try (var ps = DatabaseManager.getConnection().prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
-                for (int i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
-                }
-                ps.executeUpdate();
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-                return 0;
+        try (   var conn = DatabaseManager.getConnection();
+                var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+            for (int i = 0; i < params.length; i++) {
+                var param = params[i];
+                if (param instanceof String p) ps.setString(i + 1, p);
+                else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                else if (param == null) ps.setNull(i + 1, NULL);
             }
-
+            ps.executeUpdate();
+            var rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
         }
         catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -160,6 +159,7 @@ public class SQLAuthDAO implements AuthDAO{
         executeUpdate(statement2);
         var statement3 = "TRUNCATE games_table";
         executeUpdate(statement3);
+
     };
 
     private AuthData readAuth(ResultSet rs) throws SQLException {
@@ -278,7 +278,11 @@ public class SQLAuthDAO implements AuthDAO{
     };
     public HashMap<Integer, GameData> games() throws Exception {
         HashMap<Integer, GameData> gamesMap = new HashMap<>();
-        int numGames = selectGame("", 0).getGameID();
+        GameData gameCheck = selectGame("", 0);
+        if (gameCheck == null) {
+            return null;
+        }
+        int numGames = gameCheck.getGameID();
             for (int i = 1; i <= numGames; i++) {
                 GameData game = selectGame(null, i);
                 gamesMap.put(i, game);
@@ -286,6 +290,52 @@ public class SQLAuthDAO implements AuthDAO{
         return gamesMap;
 
     };
-    public GameData gameJoin(String username, JoinGameData joinGameData) {return null;};
+    public GameData gameJoin(String username, JoinGameData joinGameData) throws Exception {
+        int joinGameID = joinGameData.gameID();
+        GameData gameToJoin = selectGame(null, joinGameID);
+        if (gameToJoin == null) {
+            return null;
+        }
+        var statement = "";
+        var gringo = gameToJoin.getGameName();
+        var bingo = gameToJoin.getBlackUsername();
+        var clingo = gameToJoin.getWhiteUsername();
+        if (Objects.equals(clingo, "")) {
+            gameToJoin.setWhiteUsername(null);
+            var newJson = new Gson().toJson(gameToJoin);
+            statement = "UPDATE games_table SET json = ? WHERE game_id = ?";
+            executeUpdate(statement, newJson, joinGameID);
+        }
+        if (Objects.equals(bingo, "")) {
+            gameToJoin.setBlackUsername(null);
+            var newJson = new Gson().toJson(gameToJoin);
+            statement = "UPDATE games_table SET json = ? WHERE game_id = ?";
+            executeUpdate(statement, newJson, joinGameID);
+        }
+        if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.BLACK)) {
+            if (gameToJoin.getBlackUsername() == null) {
+                gameToJoin.setBlackUsername(username);
+                var newJson = new Gson().toJson(gameToJoin);
+                statement = "UPDATE games_table SET json = ? WHERE game_id = ?";
+                executeUpdate(statement, newJson, joinGameID);
+            }
+            else {
+                return null;
+            }
+        }
+        else if (Objects.equals(joinGameData.playerColor(), ChessGame.TeamColor.WHITE)){
+            if (gameToJoin.getWhiteUsername() == null) {
+                gameToJoin.setWhiteUsername(username);
+                var newJson = new Gson().toJson(gameToJoin);
+                statement = "UPDATE games_table SET json = ? WHERE game_id = ?";
+                executeUpdate(statement, newJson, joinGameID);
+            }
+            else {
+                return null;
+            }
+        }
+        // Logic to join the game
+        return gameToJoin;
+    };
 
 }

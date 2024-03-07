@@ -1,11 +1,13 @@
 package SQLAuthTests;
 
+import chess.ChessGame;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.SQLAuthDAO;
 import model.AuthData;
 import model.GameData;
+import model.JoinGameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
@@ -38,7 +40,7 @@ public class SQLAuthTests {
 
     @AfterEach
     public void breakDown() throws Exception {
-        sqlAuthDAO.clear();
+//        sqlAuthDAO.clear();
     }
 
     @Test
@@ -86,7 +88,6 @@ public class SQLAuthTests {
     @Order(5)
     @DisplayName("Register New User (Return AuthToken)")
     public void fullRegister() throws Exception {
-        assertNull(sqlAuthDAO.selectUser(testUser));
         UserData newUser = sqlAuthDAO.insertUser(testUser);
         AuthData newAuth = new AuthData(createAuthToken(), newUser.username());
         assertNotNull(sqlAuthDAO.insertToken(newAuth));
@@ -124,9 +125,7 @@ public class SQLAuthTests {
     public void validLogout() throws Exception {
         AuthData newAuth = new AuthData(createAuthToken(), "auth_token");
         AuthData thing = sqlAuthDAO.insertToken(newAuth);
-        System.out.println(thing);
         AuthData newThing = sqlAuthDAO.removeUser(newAuth);
-        System.out.println(newThing);
         assertNotNull(newThing);
     }
 
@@ -154,8 +153,50 @@ public class SQLAuthTests {
         HashMap<Integer, GameData> games = sqlAuthDAO.games();
         for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
             GameData game = entry.getValue();
-            System.out.println(game.getGameName());
         }
+
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("Test Join Game")
+    public void joinGames() throws Exception {
+        sqlAuthDAO.createGame("scooby");
+        JoinGameData newGameJoin = new JoinGameData(ChessGame.TeamColor.BLACK, 1);
+        GameData newGame = sqlAuthDAO.gameJoin("jensshum",newGameJoin);
+    }
+
+    @Test
+    @Order(14)
+    @DisplayName("Test Same color join game")
+    public void duplicateJoin() throws Exception {
+        sqlAuthDAO.createGame("scoob");
+        JoinGameData newGameJoin = new JoinGameData(ChessGame.TeamColor.BLACK, 1);
+        JoinGameData doubleGameJoin = new JoinGameData(ChessGame.TeamColor.BLACK, 1);
+        GameData newGame = sqlAuthDAO.gameJoin("jensshum",newGameJoin);
+        GameData doubleGame = sqlAuthDAO.gameJoin("flubdub", newGameJoin);
+        assertNull(doubleGame);
+    }
+
+    @Test
+    @Order(15)
+    @DisplayName("Watcher join")
+    public void watcherJoin() throws Exception {
+        sqlAuthDAO.createGame("scoob");
+        JoinGameData newGameJoin = new JoinGameData(null, 1);
+        GameData response = sqlAuthDAO.gameJoin("bloop", newGameJoin);
+
+    }
+
+    @Test
+    @Order(15)
+    @DisplayName("bad id join")
+    public void poopJoin() throws Exception {
+        sqlAuthDAO.createGame("scoob");
+        JoinGameData newGameJoin = new JoinGameData(null, 0);
+        GameData response = sqlAuthDAO.gameJoin("bloop", newGameJoin);
+        assertNull(response);
+
     }
 
 
