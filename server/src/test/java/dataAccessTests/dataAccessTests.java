@@ -1,18 +1,12 @@
-package SQLAuthTests;
+package dataAccessTests;
 
 import chess.ChessGame;
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
 import dataAccess.SQLAuthDAO;
 import model.AuthData;
 import model.GameData;
 import model.JoinGameData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
-import service.AuthService;
-import service.GameService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +14,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SQLAuthTests {
+public class dataAccessTests {
 
     private static String testUsername = "jensshum";
     private static String testPassword = "12345";
