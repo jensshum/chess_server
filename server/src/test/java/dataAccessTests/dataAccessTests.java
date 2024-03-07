@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class dataAccessTests {
 
+
     private static String testUsername = "jensshum";
     private static String testPassword = "12345";
     private static String testEmail = "jensshum.com";
