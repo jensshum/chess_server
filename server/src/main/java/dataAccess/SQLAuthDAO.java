@@ -27,6 +27,15 @@ import static java.sql.Types.NULL;
 
 public class SQLAuthDAO implements AuthDAO{
 
+    public SQLAuthDAO() {
+        try {
+            DatabaseManager.createDatabase();
+        }
+        catch (DataAccessException e ) {
+            System.out.println(e);
+            System.exit(0);
+        }
+    }
 
     public boolean testConnection() throws Exception{
         try {
@@ -58,7 +67,6 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public UserData insertUser(UserData user) throws DataAccessException{
-        DatabaseManager.createDatabase();
         String table_name = "user_table";
         var json = new Gson().toJson(user);
         String insertStatement = "INSERT INTO " + table_name + " (username, password, email, json) VALUES (?, ?, ?, ?)";
@@ -89,7 +97,6 @@ public class SQLAuthDAO implements AuthDAO{
     }
     private boolean createTable(String tableName) throws DataAccessException
     {
-        DatabaseManager.createDatabase();
         try {
             var statement = "";
             statement = switch (tableName) {
@@ -151,19 +158,16 @@ public class SQLAuthDAO implements AuthDAO{
         return user;
     }
     public AuthData insertToken(AuthData auth) throws Exception{
-        DatabaseManager.createDatabase();
         var json = new Gson().toJson(auth);
         String insertStatement = "INSERT INTO auth_table (auth_token, username, json) VALUES (?,?,?)";
         executeUpdate(insertStatement, auth.authToken(), auth.username(), json);
         return auth;
     };
     public UserData loginUser(UserData user) throws Exception {
-        DatabaseManager.createDatabase();
         UserData foundUser = selectUser(user);
         return foundUser;
     };
     public void clear() throws DataAccessException {
-        DatabaseManager.createDatabase();
         var statement = "TRUNCATE user_table";
         executeUpdate(statement);
         var statement2 = "TRUNCATE auth_table";
@@ -204,7 +208,6 @@ public class SQLAuthDAO implements AuthDAO{
         return null;
     };
     public AuthData checkToken(AuthData auth) throws Exception {
-
         if (!Objects.equals(auth.username(), "")) {
             AuthData foundAuth = selectAuth(auth, "username");
             return foundAuth;
@@ -215,7 +218,6 @@ public class SQLAuthDAO implements AuthDAO{
         }
     };
     public AuthData removeUser(AuthData auth)throws Exception{
-        DatabaseManager.createDatabase();
         AuthData foundAuth = selectAuth(auth, "auth_token");
         if (foundAuth != null) {
             var statement = "DELETE FROM auth_table WHERE auth_token = ?";
@@ -273,8 +275,6 @@ public class SQLAuthDAO implements AuthDAO{
         return null;
     };
     public GameData createGame(String gameName) throws Exception {
-        DatabaseManager.createDatabase();
-
         ChessGame newChessGame = new ChessGame();
         GameData checkGame = selectGame("", 0);
         int gameId;
@@ -292,7 +292,6 @@ public class SQLAuthDAO implements AuthDAO{
         return game;
     };
     public HashMap<Integer, GameData> games() throws Exception {
-        DatabaseManager.createDatabase();
         HashMap<Integer, GameData> gamesMap = new HashMap<>();
         GameData gameCheck = selectGame("", 0);
         if (gameCheck == null) {
@@ -307,7 +306,6 @@ public class SQLAuthDAO implements AuthDAO{
 
     };
     public GameData gameJoin(String username, JoinGameData joinGameData) throws Exception {
-        DatabaseManager.createDatabase();
         int joinGameID = joinGameData.gameID();
         GameData gameToJoin = selectGame(null, joinGameID);
         if (gameToJoin == null) {
