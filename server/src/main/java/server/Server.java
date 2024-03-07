@@ -9,8 +9,9 @@ import spark.*;
 public class Server {
 
     private ServerHandler handler;
-    public Server() throws Exception{
+    public Server() {
         handler = new ServerHandler();
+
     }
     public int run(int desiredPort) {
         Spark.port(desiredPort);

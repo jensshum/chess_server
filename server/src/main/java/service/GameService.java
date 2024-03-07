@@ -13,7 +13,7 @@ public class GameService {
 
     private AuthDAO dataAccess;
 
-    public GameService() throws Exception{
+    public GameService() {
         dataAccess = new SQLAuthDAO();
     }
 

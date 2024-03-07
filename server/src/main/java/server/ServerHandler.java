@@ -16,7 +16,7 @@ public class ServerHandler {
     private final AuthService authService;
     private final GameService gameService;
 
-    public ServerHandler() throws Exception{
+    public ServerHandler() {
         authService = new AuthService();
         gameService = new GameService();
     }

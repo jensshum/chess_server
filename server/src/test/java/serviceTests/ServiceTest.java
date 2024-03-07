@@ -19,7 +19,7 @@ public class ServiceTest {
     private static GameService gameService;
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws Exception{
         authService = new AuthService();
         gameService = new GameService();
     }

@@ -15,7 +15,7 @@ import java.util.UUID;
 public class AuthService {
 
     private AuthDAO dataAccess;
-    public AuthService() throws Exception{
+    public AuthService() {
          dataAccess = new SQLAuthDAO();
     }
 
