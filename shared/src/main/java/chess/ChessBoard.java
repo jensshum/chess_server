@@ -18,7 +18,7 @@ public class ChessBoard implements Cloneable {
 
 
     public ChessBoard() {
-
+        this.resetBoard();
     }
 
 //    public ChessBoard clone()

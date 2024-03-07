@@ -90,7 +90,7 @@ public class ServiceTest {
     @Test
     @Order(7)
     @DisplayName("Test GetGames")
-    public void testGetGames() {
+    public void testGetGames() throws Exception{
         Map<Integer, GameData> games = gameService.getGames();
         assertNotNull(games, "Games was null");
 

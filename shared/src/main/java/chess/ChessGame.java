@@ -20,7 +20,7 @@ public class ChessGame {
     private ChessBoard myBoard;
 
     public ChessGame() {
-
+        myBoard = new ChessBoard();
     }
 
     /**

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DatabaseManager;
@@ -89,21 +90,21 @@ public class SQLAuthDAO implements AuthDAO{
                         "id INT AUTO_INCREMENT PRIMARY KEY, " +
                         "username TEXT NOT NULL, " +
                         "password TEXT NOT NULL, " +
-                        "email VARCHAR(100) NOT NULL," +
+                        "email VARCHAR(255) NOT NULL," +
                         "json TEXT NOT NULL" +
                         ")";
                 case "auth_table" -> "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
                         "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                        "username VARCHAR(50) NOT NULL, " +
-                        "auth_token VARCHAR(100) NOT NULL, " +
+                        "username VARCHAR(255) NOT NULL, " +
+                        "auth_token VARCHAR(255) NOT NULL, " +
                         "json TEXT NOT NULL " +
                         ")";
                 case "games_table" -> "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
                         "id INT AUTO_INCREMENT PRIMARY KEY, " +
                         "game_id INT NOT NULL, " +
-                        "white_username VARCHAR(100) NOT NULL, " +
-                        "black_username VARCHAR(100) NOT NULL, " +
-                        "game_name VARCHAR(100) NOT NULL, " +
+                        "white_username VARCHAR(255) , " +
+                        "black_username VARCHAR(255), " +
+                        "game_name VARCHAR(255) NOT NULL, " +
                         "game TEXT NOT NULL, " +
                         "json TEXT NOT NULL" +
                         ")";
@@ -216,17 +217,43 @@ public class SQLAuthDAO implements AuthDAO{
         return game;
     }
 
-    private GameData selectGame(String gameName) throws Exception {
+    private GameData selectGame(String gameName, int id) throws Exception {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT * FROM games_table WHERE game_name = ?";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, gameName);
-                try (var rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return readGame(rs);
+            var statement = "";
+            if (gameName == "") {
+                statement = "SELECT * FROM games_table WHERE game_id = (SELECT MAX(game_id) FROM games_table);";
+                try (var ps = conn.prepareStatement(statement)) {
+                    try (var rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            return readGame(rs);
+                        }
                     }
                 }
             }
+            else if (gameName == null) {
+                statement = "SELECT * FROM games_table WHERE game_id = ?";
+                try (var ps = conn.prepareStatement(statement)) {
+                    ps.setInt(1, id);
+                    try (var rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            return readGame(rs);
+                        }
+                    }
+                }
+
+            }
+            else {
+                statement = "SELECT * FROM games_table WHERE game_name = ?";
+                try (var ps = conn.prepareStatement(statement)) {
+                    ps.setString(1, gameName);
+                    try (var rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            return readGame(rs);
+                        }
+                    }
+                }
+            }
+
         } catch (Exception e) {
             throw new Exception(e);
         }
@@ -234,7 +261,7 @@ public class SQLAuthDAO implements AuthDAO{
     };
     public GameData createGame(String gameName) throws Exception {
         ChessGame newChessGame = new ChessGame();
-        GameData checkGame = selectGame(gameName);
+        GameData checkGame = selectGame("", 0);
         int gameId;
         if (checkGame == null) {
             gameId = 1;
@@ -246,11 +273,18 @@ public class SQLAuthDAO implements AuthDAO{
         var chessGameJson = new Gson().toJson(newChessGame);
         var json = new Gson().toJson(game);
         var insertStatement = "INSERT INTO games_table (game_id, white_username, black_username, game_name, game, json) VALUES (?, ?, ?, ?, ?, ?)";
-        executeUpdate(insertStatement, gameId, "", "", gameName, chessGameJson, json);
+        executeUpdate(insertStatement, gameId, null, null, gameName, chessGameJson, json);
         return game;
     };
-    public HashMap<Integer, GameData> games() {
-        return null;
+    public HashMap<Integer, GameData> games() throws Exception {
+        HashMap<Integer, GameData> gamesMap = new HashMap<>();
+        int numGames = selectGame("", 0).getGameID();
+            for (int i = 1; i <= numGames; i++) {
+                GameData game = selectGame(null, i);
+                gamesMap.put(i, game);
+            }
+        return gamesMap;
+
     };
     public GameData gameJoin(String username, JoinGameData joinGameData) {return null;};
 

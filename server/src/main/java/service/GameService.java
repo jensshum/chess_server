@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.AuthDAO;
 import dataAccess.MemoryAuthDAO;
+import dataAccess.SQLAuthDAO;
 import model.AuthData;
 import model.GameData;
 import model.JoinGameData;
@@ -13,7 +14,7 @@ public class GameService {
     private AuthDAO dataAccess;
 
     public GameService() {
-        dataAccess = new MemoryAuthDAO();
+        dataAccess = new SQLAuthDAO();
     }
 
     public GameData createGame(String authToken, GameData game) throws Exception{
@@ -28,7 +29,7 @@ public class GameService {
         }
     }
 
-    public HashMap<Integer, GameData> getGames() {
+    public HashMap<Integer, GameData> getGames() throws Exception{
         return dataAccess.games();
     }
 

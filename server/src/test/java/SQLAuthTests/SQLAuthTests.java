@@ -5,12 +5,15 @@ import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.SQLAuthDAO;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
 import service.AuthService;
 import service.GameService;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,11 +33,12 @@ public class SQLAuthTests {
         sqlAuthDAO = new SQLAuthDAO();
         sqlAuthDAO.createTables();
         testUser = new UserData(testUsername, testPassword, testEmail);
+//        sqlAuthDAO.clear();
     }
 
-    @AfterAll
-    public static void breakDown() throws Exception {
-//        sqlAuthDAO.clear();
+    @AfterEach
+    public void breakDown() throws Exception {
+        sqlAuthDAO.clear();
     }
 
     @Test
@@ -82,7 +86,6 @@ public class SQLAuthTests {
     @Order(5)
     @DisplayName("Register New User (Return AuthToken)")
     public void fullRegister() throws Exception {
-        sqlAuthDAO.clear();
         assertNull(sqlAuthDAO.selectUser(testUser));
         UserData newUser = sqlAuthDAO.insertUser(testUser);
         AuthData newAuth = new AuthData(createAuthToken(), newUser.username());
@@ -94,7 +97,6 @@ public class SQLAuthTests {
     @Order(6)
     @DisplayName("Login Existing User")
     public void loginExistingUser() throws Exception {
-        sqlAuthDAO.clear();
         sqlAuthDAO.insertUser(testUser);
         assertNotNull(sqlAuthDAO.loginUser(testUser));
     }
@@ -111,7 +113,6 @@ public class SQLAuthTests {
     @Order(8)
     @DisplayName("Check valid token")
     public void checkValidToken() throws Exception {
-        sqlAuthDAO.clear();
         AuthData newAuth = new AuthData(createAuthToken(), "");
         sqlAuthDAO.insertToken(newAuth);
         assertNotNull(sqlAuthDAO.checkToken(newAuth));
@@ -121,7 +122,6 @@ public class SQLAuthTests {
     @Order(9)
     @DisplayName("Check logout")
     public void validLogout() throws Exception {
-        sqlAuthDAO.clear();
         AuthData newAuth = new AuthData(createAuthToken(), "auth_token");
         AuthData thing = sqlAuthDAO.insertToken(newAuth);
         System.out.println(thing);
@@ -134,9 +134,28 @@ public class SQLAuthTests {
     @Order(10)
     @DisplayName("Create Game")
     public void createGame() throws Exception {
-        sqlAuthDAO.clear();
-        sqlAuthDAO.createGame("cloopy");
         assertNotNull(sqlAuthDAO.createGame("Prloopy"));
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("MultiGame Create")
+    public void multiGames() throws Exception {
+        sqlAuthDAO.createGame("scooby");
+        sqlAuthDAO.createGame("rooby");
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("Get all Games")
+    public void getGames() throws Exception {
+        sqlAuthDAO.createGame("scooby");
+        sqlAuthDAO.createGame("rooby");
+        HashMap<Integer, GameData> games = sqlAuthDAO.games();
+        for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
+            GameData game = entry.getValue();
+            System.out.println(game.getGameName());
+        }
     }
 
 
