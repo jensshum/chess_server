@@ -30,8 +30,9 @@ public class SQLAuthDAO implements AuthDAO{
     public SQLAuthDAO() {
         try {
             DatabaseManager.createDatabase();
+            createTables();
         }
-        catch (DataAccessException e ) {
+        catch (Exception e ) {
             System.out.println(e);
             System.exit(0);
         }
