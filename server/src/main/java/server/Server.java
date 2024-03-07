@@ -1,9 +1,11 @@
 package server;
 
+
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import exception.ResponseException;
+import dataAccess.DatabaseManager;
 import spark.*;
 
 public class Server {

@@ -46,6 +46,10 @@ public class SQLAuthDAO implements AuthDAO{
         return false;
     }
 
+    public void createDatabase() throws Exception {
+        DatabaseManager.createDatabase();
+    }
+
     public void createTables() throws Exception {
         DatabaseManager.createDatabase();
         createTable("auth_table");
@@ -54,6 +58,8 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public UserData insertUser(UserData user) throws DataAccessException{
+        DatabaseManager.createDatabase();
+
         String table_name = "user_table";
         var json = new Gson().toJson(user);
         String insertStatement = "INSERT INTO " + table_name + " (username, password, email, json) VALUES (?, ?, ?, ?)";
@@ -262,6 +268,8 @@ public class SQLAuthDAO implements AuthDAO{
         return null;
     };
     public GameData createGame(String gameName) throws Exception {
+        DatabaseManager.createDatabase();
+
         ChessGame newChessGame = new ChessGame();
         GameData checkGame = selectGame("", 0);
         int gameId;
