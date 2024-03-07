@@ -9,7 +9,7 @@ import spark.*;
 public class Server {
 
     private ServerHandler handler;
-    public Server() {
+    public Server() throws Exception{
         handler = new ServerHandler();
     }
     public int run(int desiredPort) {
