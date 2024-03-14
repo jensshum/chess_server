@@ -8,8 +8,8 @@ import static ui.EscapeSequences.*;
 
 public class ClientUI {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_CHARS = 3;
-    private static final int LINE_WIDTH_IN_CHARS = 3;
+    private static final int SQUARE_SIZE_IN_CHARS = 2;
+    private static final int LINE_WIDTH_IN_CHARS = 2;
 
     private static final String EMPTY = "  ";
     private static Random rand = new Random();
@@ -35,16 +35,14 @@ public class ClientUI {
     private static void drawRow(PrintStream out, String color) {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 1; col++ ) {
-                setWhite(out);
-                if (color == "white");
+                if (color == "white") setWhite(out);
                 else setBlack(out);
                 if (row == SQUARE_SIZE_IN_CHARS / 2) {
                     int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-                    int suffixLength = SQUARE_SIZE_IN_CHARS - prefixLength - 1;
-
+                    int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
                     out.print(EMPTY.repeat(prefixLength));
                     out.print(SET_TEXT_COLOR_RED);
-                    out.print("X");
+                    out.print("");
                     out.print(EMPTY.repeat(suffixLength));
                 }
                 else {
@@ -65,12 +63,11 @@ public class ClientUI {
     }
 
     private static void printHeaderText(PrintStream out, String headerChar) {
-        out.print(SET_BG_COLOR_LIGHT_GREY);
+//        out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
-
         out.print(headerChar);
 
-        setGray(out);
+//        setGray(out);
     }
 
     private static void drawHeader(PrintStream out, String headerChar) {
@@ -79,6 +76,7 @@ public class ClientUI {
 
         out.print(EMPTY.repeat(prefixLength));
         printHeaderText(out, headerChar);
+        out.print(" ");
         out.print(EMPTY.repeat(suffixLength));
     }
 
@@ -92,10 +90,16 @@ public class ClientUI {
         String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
         for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
             drawHeader(out, headers[col]);
-            if (col < BOARD_SIZE_IN_SQUARES -1) {
-                out.print(EMPTY.repeat(LINE_WIDTH_IN_CHARS));
+            if (col < BOARD_SIZE_IN_SQUARES - 1) {
+                out.print(EMPTY.repeat(LINE_WIDTH_IN_CHARS / 3));
             }
         }
+        out.print(SET_BG_COLOR_DARK_GREY);
+    }
+
+
+    private static void drawVerticalLine(PrintStream out) {
+//        int boardSizeInSpaces = BOARD_SIZE_IN_SQUARES *
     }
 
     private static void drawBoard(PrintStream out) {
