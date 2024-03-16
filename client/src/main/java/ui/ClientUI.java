@@ -139,13 +139,13 @@ public class ClientUI {
         drawHeaders(out);
         drawGraySquare(out, -1);
         out.println();
+//        int rowNum = reverse ? 0 : 8;
         int rowNum = 8;
-
         String couleur = "white";
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES ; row++) {
-            String[] pieces = {"R", "N", "B", "K", "Q", "B", "N", "R"};
+            String[] pieces = {WHITE_ROOK.replace(" ", ""), WHITE_KNIGHT.replace(" ", ""), WHITE_BISHOP.replace(" ", ""), WHITE_KING.replace(" ", ""), WHITE_KING.replace(" ", ""), WHITE_QUEEN.replace(" ", ""), WHITE_BISHOP.replace(" ", ""), WHITE_KNIGHT.replace(" ", ""), WHITE_ROOK.replace(" ", "")};
             if (row == 1 || row == 6) {
-                pieces = new String[]{"P", "P", "P", "P", "P", "P", "P", "P"};
+                pieces = new String[]{WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", "")};
             }
             drawGraySquare(out, rowNum);
             drawRow(out, couleur, rowNum, pieces);
