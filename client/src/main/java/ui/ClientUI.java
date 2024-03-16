@@ -39,22 +39,50 @@ public class ClientUI {
                 if (color == "white") setWhite(out);
                 else setBlack(out);
                 if (row == SQUARE_SIZE_IN_CHARS / 2) {
-                    int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-                    int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
-                    out.print(EMPTY.repeat(prefixLength));
-                    out.print(SET_TEXT_COLOR_RED);
-                    out.print("");
-                    out.print(EMPTY.repeat(suffixLength));
+                    if (rowNum > 6 || rowNum < 3) {
+                        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
+                        int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
+                        out.print(EMPTY.repeat(prefixLength));
+                        out.print(SET_TEXT_COLOR_RED);
+                        out.print("P");
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    else
+                    {
+                    out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+                    }
                 }
                 else {
-                    out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+                    if (rowNum > 6 || rowNum < 3) {
+                        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
+                        int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
+                        out.print(EMPTY.repeat(prefixLength));
+                        out.print(SET_TEXT_COLOR_RED);
+                        out.print("L");
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    else {
+                        out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+                    }
                 }
 
                 if (col < BOARD_SIZE_IN_SQUARES -1 ) {
                     if (color == "white")
                     out.print(SET_BG_COLOR_BLACK);
                     else out.print(SET_BG_COLOR_WHITE);
-                    out.print(EMPTY.repeat(LINE_WIDTH_IN_CHARS));
+//                    out.print(EMPTY.repeat(LINE_WIDTH_IN_CHARS));
+                    if (rowNum > 6 || rowNum < 3) {
+                        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
+                        int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
+                        out.print(EMPTY.repeat(prefixLength));
+                        out.print(SET_TEXT_COLOR_RED);
+                        out.print("S");
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    else
+                    {
+                        out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+                    }
                 }
             }
 //            setBlack(out);
@@ -128,7 +156,7 @@ public class ClientUI {
 
 
         out.println();
-//        drawRow(out);
+
 
         int rowNum = 8;
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES / 2; row++) {
