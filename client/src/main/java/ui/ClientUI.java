@@ -147,6 +147,8 @@ public class ClientUI {
             if (row == 1 || row == 6) {
                 pieces = new String[]{WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", "")};
             }
+
+
             drawGraySquare(out, rowNum);
             drawRow(out, couleur, rowNum, pieces);
             rowNum--;
