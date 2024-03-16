@@ -57,8 +57,10 @@ public class ClientUI {
                 }
             }
 //            setBlack(out);
+
             out.print(SET_BG_COLOR_DARK_GREY);
         }
+        drawGraySquare(out);
         out.println();
     }
 
@@ -102,15 +104,29 @@ public class ClientUI {
 //        int boardSizeInSpaces = BOARD_SIZE_IN_SQUARES *
     }
 
-    private static void drawBoard(PrintStream out) {
+    private static void drawGraySquare(PrintStream out){
+        for (int row = 0; row < 1; row++) {
+            setGray(out);
+            out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+        }
+        out.print(SET_BG_COLOR_DARK_GREY);
+    }
 
+    private static void drawBoard(PrintStream out) {
+        drawGraySquare(out);
         drawHeaders(out);
+        drawGraySquare(out);
+
+
         out.println();
 //        drawRow(out);
 
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES / 2; row++) {
+            drawGraySquare(out);
             drawRow(out, "white");
+            drawGraySquare(out);
             drawRow(out, "black");
+
 //            if (row < BOARD_SIZE_IN_SQUARES - 1) {
 //
 //            }
