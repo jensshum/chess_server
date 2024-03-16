@@ -33,50 +33,36 @@ public class ClientUI {
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
-    private static void drawRow(PrintStream out, String color, int rowNum) {
+    private static void drawRow(PrintStream out, String squareColor, int rowNum, String[] pieces) {
+        int pieceIndex = 0;
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 1; col++ ) {
-                if (color == "white") setWhite(out);
+                if (squareColor == "white") setWhite(out);
                 else setBlack(out);
-                if (row == SQUARE_SIZE_IN_CHARS / 2) {
-                    if (rowNum > 6 || rowNum < 3) {
-                        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-                        int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
-                        out.print(EMPTY.repeat(prefixLength));
-                        out.print(SET_TEXT_COLOR_RED);
-                        out.print("P");
-                        out.print(EMPTY.repeat(suffixLength));
-                    }
-                    else
-                    {
-                    out.print(EMPTY.repeat(3));
-                    }
+                if (rowNum > 6 || rowNum < 3) {
+                    int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
+                    int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
+                    out.print(EMPTY.repeat(prefixLength));
+                    out.print(SET_TEXT_COLOR_RED);
+                    out.print(pieces[pieceIndex]);
+                    pieceIndex++;
+                    out.print(EMPTY.repeat(suffixLength));
                 }
                 else {
-                    if (rowNum > 6 || rowNum < 3) {
-                        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-                        int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
-                        out.print(EMPTY.repeat(prefixLength));
-                        out.print(SET_TEXT_COLOR_RED);
-                        out.print("L");
-                        out.print(EMPTY.repeat(suffixLength));
-                    }
-                    else {
-                        out.print(EMPTY.repeat(3));
-                    }
+                    out.print(EMPTY.repeat(3));
                 }
 
                 if (col < BOARD_SIZE_IN_SQUARES -1 ) {
-                    if (color == "white")
+                    if (squareColor == "white")
                     out.print(SET_BG_COLOR_BLACK);
                     else out.print(SET_BG_COLOR_WHITE);
-//                    out.print(EMPTY.repeat(LINE_WIDTH_IN_CHARS));
                     if (rowNum > 6 || rowNum < 3) {
                         int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
                         int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
                         out.print(EMPTY.repeat(prefixLength));
                         out.print(SET_TEXT_COLOR_RED);
-                        out.print("S");
+                        out.print(pieces[pieceIndex]);
+                        pieceIndex++;
                         out.print(EMPTY.repeat(suffixLength));
                     }
                     else
@@ -158,16 +144,16 @@ public class ClientUI {
 
 
         int rowNum = 8;
-        for (int row = 0; row < BOARD_SIZE_IN_SQUARES / 2; row++) {
+        String couleur = "white";
+        for (int row = 0; row < BOARD_SIZE_IN_SQUARES ; row++) {
+            String[] pieces = {"R", "N", "B", "K", "Q", "B", "N", "R"};
+            if (row == 1 || row == 6) {
+                pieces = new String[]{"P", "P", "P", "P", "P", "P", "P", "P"};
+            }
             drawGraySquare(out, rowNum);
-            drawRow(out, "white", rowNum);
+            drawRow(out, couleur, rowNum, pieces);
             rowNum--;
-            drawGraySquare(out, rowNum);
-            drawRow(out, "black", rowNum);
-            rowNum--;
-//            if (row < BOARD_SIZE_IN_SQUARES - 1) {
-//
-//            }
+            couleur = (couleur == "white") ? "black" : "white";
         }
         drawGraySquare(out, -1);
         drawHeaders(out);
