@@ -10,6 +10,7 @@ public class ClientUI {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_SIZE_IN_CHARS = 2;
     private static final int LINE_WIDTH_IN_CHARS = 2;
+    private int rowNum;
 
     private static final String EMPTY = "  ";
     private static Random rand = new Random();
@@ -32,7 +33,7 @@ public class ClientUI {
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
-    private static void drawRow(PrintStream out, String color) {
+    private static void drawRow(PrintStream out, String color, int rowNum) {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 1; col++ ) {
                 if (color == "white") setWhite(out);
@@ -60,7 +61,7 @@ public class ClientUI {
 
             out.print(SET_BG_COLOR_DARK_GREY);
         }
-        drawGraySquare(out);
+        drawGraySquare(out, rowNum);
         out.println();
     }
 
@@ -104,33 +105,46 @@ public class ClientUI {
 //        int boardSizeInSpaces = BOARD_SIZE_IN_SQUARES *
     }
 
-    private static void drawGraySquare(PrintStream out){
-        for (int row = 0; row < 1; row++) {
-            setGray(out);
-            out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+    private static void drawGraySquare(PrintStream out, int row){
+        setGray(out);
+        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
+        int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
+        out.print(EMPTY.repeat(prefixLength));
+        out.print(SET_TEXT_COLOR_BLACK);
+        if (row >= 0) {
+            out.print(row);
         }
+        else {
+            out.print(" ");
+        }
+        out.print(EMPTY.repeat(suffixLength));
         out.print(SET_BG_COLOR_DARK_GREY);
     }
 
     private static void drawBoard(PrintStream out) {
-        drawGraySquare(out);
+        drawGraySquare(out, -1);
         drawHeaders(out);
-        drawGraySquare(out);
+        drawGraySquare(out, -1);
 
 
         out.println();
 //        drawRow(out);
 
+        int rowNum = 8;
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES / 2; row++) {
-            drawGraySquare(out);
-            drawRow(out, "white");
-            drawGraySquare(out);
-            drawRow(out, "black");
-
+            drawGraySquare(out, rowNum);
+            drawRow(out, "white", rowNum);
+            rowNum--;
+            drawGraySquare(out, rowNum);
+            drawRow(out, "black", rowNum);
+            rowNum--;
 //            if (row < BOARD_SIZE_IN_SQUARES - 1) {
 //
 //            }
-
         }
+        drawGraySquare(out, -1);
+        drawHeaders(out);
+        drawGraySquare(out, -1);
+
     }
 }
