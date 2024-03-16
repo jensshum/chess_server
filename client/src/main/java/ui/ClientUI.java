@@ -20,7 +20,7 @@ public class ClientUI {
 
         out.print(ERASE_SCREEN);
 
-        drawBoard(out);
+        drawBoards(out);
     }
 
     private static void setGray(PrintStream out) {
@@ -134,16 +134,13 @@ public class ClientUI {
         out.print(SET_BG_COLOR_DARK_GREY);
     }
 
-    private static void drawBoard(PrintStream out) {
+    private static void drawBoard(PrintStream out, boolean reverse) {
         drawGraySquare(out, -1);
         drawHeaders(out);
         drawGraySquare(out, -1);
-
-
         out.println();
-
-
         int rowNum = 8;
+
         String couleur = "white";
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES ; row++) {
             String[] pieces = {"R", "N", "B", "K", "Q", "B", "N", "R"};
@@ -158,6 +155,14 @@ public class ClientUI {
         drawGraySquare(out, -1);
         drawHeaders(out);
         drawGraySquare(out, -1);
+    }
 
+
+    private static void drawBoards(PrintStream out) {
+        drawBoard(out, false);
+        out.println();
+        setBlack(out);
+        out.println();
+        drawBoard(out, true);
     }
 }
