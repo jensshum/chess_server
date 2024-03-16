@@ -12,7 +12,7 @@ public class ClientUI {
     private static final int LINE_WIDTH_IN_CHARS = 2;
     private int rowNum;
 
-    private static final String EMPTY = "  ";
+    private static final String EMPTY = " ";
     private static Random rand = new Random();
 
     public static void main(String[] args) {
@@ -49,7 +49,7 @@ public class ClientUI {
                     }
                     else
                     {
-                    out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+                    out.print(EMPTY.repeat(3));
                     }
                 }
                 else {
@@ -62,7 +62,7 @@ public class ClientUI {
                         out.print(EMPTY.repeat(suffixLength));
                     }
                     else {
-                        out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+                        out.print(EMPTY.repeat(3));
                     }
                 }
 
@@ -81,12 +81,11 @@ public class ClientUI {
                     }
                     else
                     {
-                        out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
+                        out.print(EMPTY.repeat(3));
                     }
                 }
             }
 //            setBlack(out);
-
             out.print(SET_BG_COLOR_DARK_GREY);
         }
         drawGraySquare(out, rowNum);
