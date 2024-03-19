@@ -77,7 +77,6 @@ public class ClientUI {
                     out.print(EMPTY.repeat(3));
                 }
             }
-//            setBlack(out);
             out.print(SET_BG_COLOR_DARK_GREY);
         }
         drawGraySquare(out, rowNum);
