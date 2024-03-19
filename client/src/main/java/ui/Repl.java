@@ -7,8 +7,8 @@ import java.util.Scanner;
 public class Repl {
     private final ChessClient client;
 
-    public Repl(int serverNum) {
-        client = new ChessClient(serverNum);
+    public Repl(String serverUrl) {
+        client = new ChessClient(serverUrl);
     }
 
     public void run() {

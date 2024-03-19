@@ -1,32 +1,38 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
+import model.AuthData;
 import model.UserData;
 import exception.ResponseException;
 import server.Server;
 
 public class ChessClient {
     private String visitorName = null;
-    private final Server server;
+    private ServerFacade facade;
+
+    private String serverUrl;
     private State state = State.SIGNEDOUT;
 
-    public ChessClient(int serverNum) {
-        server = new Server();
-        server.run(serverNum);
+    public ChessClient(String serverUrl) {
+        this.serverUrl = serverUrl;
+        facade = new ServerFacade(serverUrl);
     }
 
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+//            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            Scanner s = new Scanner(System.in);
+
             return switch (cmd) {
                 case "help" -> help();
-//                case "login" -> signIn();
-                case "register" -> register();
+                case "login" -> signIn(s);
+                case "register" -> register(s);
 //                case "create" -> rescuePet(params);
 //                case "list" -> listPets();
 //                case "logout" -> signOut();
@@ -35,13 +41,12 @@ public class ChessClient {
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (ResponseException ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
 
-    public String register() throws ResponseException {
-        Scanner s = new Scanner(System.in);
+    public String register(Scanner s) throws ResponseException {
         System.out.print("(1/3) Enter your username\n>>> ");
         String username = s.nextLine();
         System.out.print("(2/3) Enter your password\n>>> ");
@@ -49,18 +54,25 @@ public class ChessClient {
         System.out.print("(3/3) Enter your email\n>>> ");
         String email = s.nextLine();
         state = State.SIGNEDIN;
-        return null;
+        AuthData response = facade.register(username, password, email);
+        System.out.println(response);
+        return "";
     }
 
-//    public String signIn(String... params) throws ResponseException {
-//        if (params.length >= 1) {
-//            state = State.SIGNEDIN;
-//            visitorName = String.join("-", params);
-//            ws.enterPetShop(visitorName);
-//            return String.format("You signed in as %s.", visitorName);
-//        }
-//        throw new ResponseException(400, "Expected: <yourname>");
-//    }
+    public String signIn(Scanner s) throws Exception {
+        System.out.print("Enter your username\n>>> ");
+        String username = s.nextLine();
+        System.out.print("Enter your password\n>>> ");
+        String password = s.nextLine();
+        if (Objects.equals(username, "")) {
+            throw new ResponseException("Expected: <username>");
+        }
+        state = State.SIGNEDIN;
+        AuthData auth = facade.login(username, password);
+//        System.out.println();
+
+        return String.format("You're signed in as %s.", username);
+    }
 
 //    public String rescuePet(String... params) throws ResponseException {
 //        assertSignedIn();
@@ -139,12 +151,12 @@ public class ChessClient {
                     """;
         }
         return """
-                - Help
-                - Logout
-                - Create
-                - List
-                - Join
-                - Quit
+                1. Help
+                2. Logout
+                3. Create
+                4. List
+                5. Join
+                6. Quit
                 """;
     }
 
