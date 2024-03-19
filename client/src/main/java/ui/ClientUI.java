@@ -33,7 +33,7 @@ public class ClientUI {
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
-    private static void drawRow(PrintStream out, String squareColor, int rowNum, String[] pieces) {
+    private static void drawRow(PrintStream out, String squareColor, int rowNum, String[] pieces, boolean reverse) {
         int pieceIndex = 0;
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 1; col++ ) {
@@ -43,7 +43,11 @@ public class ClientUI {
                     int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
                     int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
                     out.print(EMPTY.repeat(prefixLength));
-                    out.print(SET_TEXT_COLOR_RED);
+                    if (rowNum > 6)
+                        out.print(SET_TEXT_COLOR_BLUE);
+                    else {
+                        out.print(SET_TEXT_COLOR_RED);
+                    }
                     out.print(pieces[pieceIndex]);
                     pieceIndex++;
                     out.print(EMPTY.repeat(suffixLength));
@@ -52,23 +56,25 @@ public class ClientUI {
                     out.print(EMPTY.repeat(3));
                 }
 
-                if (col < BOARD_SIZE_IN_SQUARES -1 ) {
-                    if (squareColor == "white")
-                    out.print(SET_BG_COLOR_BLACK);
-                    else out.print(SET_BG_COLOR_WHITE);
-                    if (rowNum > 6 || rowNum < 3) {
-                        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-                        int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
-                        out.print(EMPTY.repeat(prefixLength));
+                if (squareColor == "white")
+                out.print(SET_BG_COLOR_BLACK);
+                else out.print(SET_BG_COLOR_WHITE);
+                if (rowNum > 6 || rowNum < 3) {
+                    int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
+                    int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
+                    out.print(EMPTY.repeat(prefixLength));
+                    if (rowNum > 6)
+                        out.print(SET_TEXT_COLOR_BLUE);
+                    else {
                         out.print(SET_TEXT_COLOR_RED);
-                        out.print(pieces[pieceIndex]);
-                        pieceIndex++;
-                        out.print(EMPTY.repeat(suffixLength));
                     }
-                    else
-                    {
-                        out.print(EMPTY.repeat(3));
-                    }
+                    out.print(pieces[pieceIndex]);
+                    pieceIndex++;
+                    out.print(EMPTY.repeat(suffixLength));
+                }
+                else
+                {
+                    out.print(EMPTY.repeat(3));
                 }
             }
 //            setBlack(out);
@@ -79,11 +85,8 @@ public class ClientUI {
     }
 
     private static void printHeaderText(PrintStream out, String headerChar) {
-//        out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(headerChar);
-
-//        setGray(out);
     }
 
     private static void drawHeader(PrintStream out, String headerChar) {
@@ -101,9 +104,10 @@ public class ClientUI {
         out.print(SET_TEXT_COLOR_BLACK);
     }
 
-    private static void drawHeaders(PrintStream out) {
+    private static void drawHeaders(PrintStream out, boolean reverse) {
         setGray(out);
         String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        if (reverse) headers = new String[]{"h","g","f","e","d","c","b","a"};
         for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
             drawHeader(out, headers[col]);
             if (col < BOARD_SIZE_IN_SQUARES - 1) {
@@ -111,11 +115,6 @@ public class ClientUI {
             }
         }
         out.print(SET_BG_COLOR_DARK_GREY);
-    }
-
-
-    private static void drawVerticalLine(PrintStream out) {
-//        int boardSizeInSpaces = BOARD_SIZE_IN_SQUARES *
     }
 
     private static void drawGraySquare(PrintStream out, int row){
@@ -136,35 +135,32 @@ public class ClientUI {
 
     private static void drawBoard(PrintStream out, boolean reverse) {
         drawGraySquare(out, -1);
-        drawHeaders(out);
+        drawHeaders(out, reverse);
         drawGraySquare(out, -1);
         out.println();
-//        int rowNum = reverse ? 0 : 8;
-        int rowNum = 8;
+        int rowNum = reverse ? 1 : 8;
         String couleur = "white";
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES ; row++) {
-            String[] pieces = {WHITE_ROOK.replace(" ", ""), WHITE_KNIGHT.replace(" ", ""), WHITE_BISHOP.replace(" ", ""), WHITE_KING.replace(" ", ""), WHITE_KING.replace(" ", ""), WHITE_QUEEN.replace(" ", ""), WHITE_BISHOP.replace(" ", ""), WHITE_KNIGHT.replace(" ", ""), WHITE_ROOK.replace(" ", "")};
+            String[] pieces = {"R", "N", "B", "K", "Q", "B", "N", "R"};
             if (row == 1 || row == 6) {
-                pieces = new String[]{WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", ""), WHITE_PAWN.replace(" ", "")};
+                pieces = new String[]{"P", "P", "P", "P", "P", "P", "P", "P"};
             }
-
-
             drawGraySquare(out, rowNum);
-            drawRow(out, couleur, rowNum, pieces);
-            rowNum--;
+            drawRow(out, couleur, rowNum, pieces, reverse);
+            if (reverse) rowNum++; else rowNum--;
             couleur = (couleur == "white") ? "black" : "white";
         }
         drawGraySquare(out, -1);
-        drawHeaders(out);
+        drawHeaders(out, reverse);
         drawGraySquare(out, -1);
     }
 
 
     private static void drawBoards(PrintStream out) {
-        drawBoard(out, false);
+        drawBoard(out, true);
         out.println();
         setBlack(out);
         out.println();
-        drawBoard(out, true);
+        drawBoard(out, false);
     }
 }
