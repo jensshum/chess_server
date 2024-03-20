@@ -14,5 +14,9 @@ public class GamesListFromHashMap {
             }
         }
     }
+
+    public List<GameData> getGames() {
+        return games;
+    }
 }
 

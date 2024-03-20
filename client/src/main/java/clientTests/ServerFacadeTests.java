@@ -68,8 +68,8 @@ public class ServerFacadeTests {
             AuthData auth2 = serverFacade.login("jensshum", "wilberforce1");
         }
         catch(exception.ResponseException e) {
-
             assertNotNull(e);
+
         }
     }
 
@@ -93,7 +93,7 @@ public class ServerFacadeTests {
     public void createGame() throws Exception {
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
         GameData game = serverFacade.createGame("newGame");
-        System.out.println(game.getGameName());
+        System.out.print(game.getGameName());
     }
 
 

@@ -4,10 +4,7 @@ package ui;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.AuthData;
-import model.GameData;
-import model.JoinGameData;
-import model.UserData;
+import model.*;
 
 import java.io.*;
 import java.net.*;
@@ -68,6 +65,11 @@ public class ServerFacade {
         }
         return this.makeRequest("PUT", path, newJoiner, GameData.class);
 
+    }
+
+    public GamesListFromHashMap listGames() throws Exception {
+        var path = "/game";
+        return this.makeRequest("GET", path, null, null);
     }
 
 

@@ -5,10 +5,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
-import model.AuthData;
-import model.GameData;
-import model.JoinGameData;
-import model.UserData;
+import model.*;
 import exception.ResponseException;
 import server.Server;
 
@@ -39,6 +36,7 @@ public class ChessClient {
                 case "join" -> joinGame(s);
                 case "logout" -> signOut();
 //                case "join" -> adoptPet(params);
+                case "list" -> listGames(s);
 //                case "joinobserver" -> adoptAllPets();
                 case "quit" -> "quit";
                 default -> help();
@@ -99,9 +97,17 @@ public class ChessClient {
             throw new ResponseException("Error. No game name.");
         }
         String game = facade.createGame(gameName).toString();
-
         return String.format("Game: \"%s\" created! (Next enter \"join\" to join the game)\n", gameName);
 
+    }
+
+    public String listGames(Scanner s) throws Exception {
+        assertSignedIn();
+        GamesListFromHashMap games = facade.listGames();
+        for (GameData g : games.getGames()) {
+            System.out.println(g.getGameID() + "," + g.getGameName());
+        }
+        return "";
     }
 
     public String joinGame(Scanner s) throws Exception {
@@ -126,6 +132,7 @@ public class ChessClient {
                 facade.gameJoin("black", gameId);
             }
         }
+        return "";
     }
 
 //    public String listPets() throws ResponseException {

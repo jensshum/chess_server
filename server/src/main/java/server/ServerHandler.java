@@ -98,6 +98,8 @@ public class ServerHandler {
             return new Gson().toJson(new ErrorMessage("Error: unauthorized"));
         }
     }
+
+
     public Object joinGame(Request req, Response res) throws Exception {
         String authToken = req.headers("authorization");
         AuthData auth = new AuthData(authToken, "");
