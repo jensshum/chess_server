@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
+import model.JoinGameData;
 import model.UserData;
 import exception.ResponseException;
 import server.Server;
@@ -33,9 +35,9 @@ public class ChessClient {
                 case "help" -> help();
                 case "login" -> signIn(s);
                 case "register" -> register(s);
-//                case "create" -> rescuePet(params);
-//                case "list" -> listPets();
-//                case "logout" -> signOut();
+                case "create" -> createGame(s);
+                case "join" -> joinGame(s);
+                case "logout" -> signOut();
 //                case "join" -> adoptPet(params);
 //                case "joinobserver" -> adoptAllPets();
                 case "quit" -> "quit";
@@ -47,44 +49,84 @@ public class ChessClient {
     }
 
     public String register(Scanner s) throws ResponseException {
-        System.out.print("(1/3) Enter your username\n>>> ");
+        System.out.print("(1/3) Enter your username:\n>>> ");
         String username = s.nextLine();
-        System.out.print("(2/3) Enter your password\n>>> ");
+        System.out.print("(2/3) Enter your password:\n>>> ");
         String password = s.nextLine();
-        System.out.print("(3/3) Enter your email\n>>> ");
+        System.out.print("(3/3) Enter your email:\n>>> ");
         String email = s.nextLine();
-        state = State.SIGNEDIN;
-        AuthData response = facade.register(username, password, email);
-        System.out.println(response);
+        try {
+            AuthData response = facade.register(username, password, email);
+            state = State.SIGNEDIN;
+            visitorName = username;
+            return String.format("Hi %s! Welcome to Chess Online.\n", username);
+        }
+        catch (ResponseException e) {
+            System.out.println("Invalid register. " + e.getMessage());
+            help();
+
+        }
         return "";
     }
 
     public String signIn(Scanner s) throws Exception {
-        System.out.print("Enter your username\n>>> ");
+        System.out.print("Enter your username:\n>>> ");
         String username = s.nextLine();
-        System.out.print("Enter your password\n>>> ");
+        System.out.print("Enter your password:\n>>> ");
         String password = s.nextLine();
         if (Objects.equals(username, "")) {
-            throw new ResponseException("Expected: <username>");
+            throw new ResponseException("Expected: username");
         }
-        state = State.SIGNEDIN;
-        AuthData auth = facade.login(username, password);
-//        System.out.println();
+        try {
+            AuthData auth = facade.login(username, password);
+            state = State.SIGNEDIN;
+            return String.format("Hi %s! Welcome to Chess Online.\n", username);
 
-        return String.format("You're signed in as %s.", username);
+        }
+        catch (ResponseException e) {
+            System.out.println("Invalid login" + e.getMessage());
+            help();
+        }
+//        System.out.println();
+        return "";
     }
 
-//    public String rescuePet(String... params) throws ResponseException {
-//        assertSignedIn();
-//        if (params.length >= 2) {
-//            var name = params[0];
-//            var type = PetType.valueOf(params[1].toUpperCase());
-//            var pet = new Pet(0, name, type);
-//            pet = server.addPet(pet);
-//            return String.format("You rescued %s. Assigned ID: %d", pet.name(), pet.id());
-//        }
-//        throw new ResponseException(400, "Expected: <name> <CAT|DOG|FROG>");
-//    }
+    public String createGame(Scanner s) throws Exception {
+        assertSignedIn();
+        System.out.print("Name the game: \n>>> ");
+        String gameName = s.nextLine();
+        if (Objects.equals(gameName, "")) {
+            throw new ResponseException("Error. No game name.");
+        }
+        String game = facade.createGame(gameName).toString();
+
+        return String.format("Game: \"%s\" created! (Next enter \"join\" to join the game)\n", gameName);
+
+    }
+
+    public String joinGame(Scanner s) throws Exception {
+        assertSignedIn();
+        System.out.print("Join as a (p)layer or (o)bserver?\n>>> ");
+        String playerType = s.nextLine();
+        if (Objects.equals(playerType, "o") || Objects.equals(playerType, "observer")) {
+            System.out.print("Enter game number:\n>>> ");
+            int gameId = s.nextInt();
+            System.out.print(String.format("Observing game %d.", gameId));
+            facade.gameJoin("", gameId);
+        }
+        else {
+            System.out.print("Enter game number:\n>>> ");
+            int gameId = s.nextInt();
+            System.out.print("Join as (w)hite or (b)lack?\n>>> ");
+            String color = s.nextLine();
+            if (Objects.equals(color, "w") || Objects.equals(color, "white")) {
+                facade.gameJoin("white", gameId);
+            }
+            else {
+                facade.gameJoin("black", gameId);
+            }
+        }
+    }
 
 //    public String listPets() throws ResponseException {
 //        assertSignedIn();
@@ -124,13 +166,12 @@ public class ChessClient {
 //        return buffer.toString();
 //    }
 //
-//    public String signOut() throws ResponseException {
-//        assertSignedIn();
-//        ws.leavePetShop(visitorName);
-//        ws = null;
-//        state = State.SIGNEDOUT;
-//        return String.format("%s left the shop", visitorName);
-//    }
+    public String signOut() throws Exception {
+        assertSignedIn();
+        state = State.SIGNEDOUT;
+        facade.logout();
+        return String.format("%s left the game. Bye!", visitorName);
+    }
 //
 //    private Pet getPet(int id) throws ResponseException {
 //        for (var pet : server.listPets()) {

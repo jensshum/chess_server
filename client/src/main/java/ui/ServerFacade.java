@@ -1,17 +1,23 @@
 
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
+import model.JoinGameData;
 import model.UserData;
 
 import java.io.*;
 import java.net.*;
+import java.util.Objects;
 
 public class ServerFacade {
 
     private final String serverUrl;
+
+    private AuthData loggedInUser;
 
     public ServerFacade(String url) {
 
@@ -21,21 +27,48 @@ public class ServerFacade {
     public AuthData register(String username, String password, String email) throws ResponseException {
         UserData newUser = new UserData(username, password, email);
         var path = "/user";
-        return this.makeRequest("POST", path, newUser, AuthData.class);
+        AuthData auth = makeRequest("POST", path, newUser, AuthData.class);
+        loggedInUser = auth;
+        return auth;
 
     }
 
     public AuthData login(String userName, String password) throws Exception {
         UserData existingUser = new UserData(userName, password, "");
         var path = "/session";
-        return this.makeRequest("POST", path, existingUser, AuthData.class);
+        AuthData auth = makeRequest("POST", path, existingUser, AuthData.class);
+        loggedInUser = auth;
+        return auth;
     }
 
     public void logout() throws Exception {
         var path = "/session";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, loggedInUser, null);
     }
 
+    public GameData createGame(String gameName) throws Exception {
+        var path = "/game";
+        GameData game = new GameData(0, "", "", gameName, null);
+        return this.makeRequest("POST", path, game, GameData.class);
+    }
+
+    public GameData gameJoin(String color, int gameId) throws Exception {
+        var path = "/game";
+        JoinGameData newJoiner;
+        if (Objects.equals(color, "")) {
+            newJoiner = new JoinGameData(null, gameId);
+        }
+        else {
+            if (Objects.equals(color, "black")) {
+                newJoiner = new JoinGameData(ChessGame.TeamColor.BLACK, gameId);
+            }
+            else {
+                newJoiner = new JoinGameData(ChessGame.TeamColor.WHITE, gameId);
+            }
+        }
+        return this.makeRequest("PUT", path, newJoiner, GameData.class);
+
+    }
 
 
 //    public void deletePet(int id) throws ResponseException {
@@ -62,6 +95,9 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+            if (loggedInUser != null) {
+                http.addRequestProperty("authorization", loggedInUser.authToken());
+            }
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);

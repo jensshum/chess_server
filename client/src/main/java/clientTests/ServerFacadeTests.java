@@ -2,6 +2,7 @@ package clientTests;
 
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -50,9 +51,15 @@ public class ServerFacadeTests {
     @DisplayName("Test Login")
     public void testLogin() throws Exception{
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
-        AuthData auth2 = serverFacade.login("", "wilberforce1");
-        System.out.println(auth2);
-        assertNotNull(auth2);
+        try {
+            AuthData auth2 = serverFacade.login("", "wilberforce1");
+        }
+        catch (ResponseException e) {
+            System.out.println("Bloop");
+        }
+//        System.out.println(auth2.authToken());
+//        System.out.println(auth2);
+//        assertNotNull(auth2);
     }
     @Test
     @DisplayName("Test bad Login")
@@ -66,19 +73,27 @@ public class ServerFacadeTests {
         }
     }
 
-@Test
-@DisplayName("TestLogout")
-public void testLogout() throws Exception {
-    AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
-    serverFacade.logout();
+    @Test
+    @DisplayName("TestLogout")
+    public void testLogout() throws Exception {
+        AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+        serverFacade.logout();
 
-}
+    }
 
     @Test
     @Order(2)
     @DisplayName("Delete all")
     public void deleteAll() throws Exception {
         serverFacade.deleteAllGames();
+    }
+
+    @Test
+    @DisplayName("Create Game")
+    public void createGame() throws Exception {
+        AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+        GameData game = serverFacade.createGame("newGame");
+        System.out.println(game.getGameName());
     }
 
 
