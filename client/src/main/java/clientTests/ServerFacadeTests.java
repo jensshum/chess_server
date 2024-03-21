@@ -27,12 +27,11 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() throws ResponseException {
         server = new Server();
-        var port = server.run(8081);
+        var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         serverFacade = new ServerFacade("http://localhost:8081");
         serverFacade.deleteAllGames();
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
-        assertNull(null);
 
 
     }
