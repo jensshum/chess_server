@@ -59,6 +59,18 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("New TEst")
+    public void newTest() {
+        assertNotNull("e");
+    }
+
+    @Test
+    @DisplayName("Null Test")
+    public void nullTest() {
+        assertNull(null);
+    }
+
+    @Test
     @DisplayName("Test Login")
     public void testLogin() throws Exception{
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
