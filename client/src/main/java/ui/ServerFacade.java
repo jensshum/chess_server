@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 
+import javax.swing.plaf.IconUIResource;
 import java.io.*;
 import java.net.*;
 import java.util.Objects;
@@ -63,20 +64,15 @@ public class ServerFacade {
                 newJoiner = new JoinGameData(ChessGame.TeamColor.WHITE, gameId);
             }
         }
-        return this.makeRequest("PUT", path, newJoiner, GameData.class);
+        return this.makeRequest("PUT", path, newJoiner, null);
 
     }
 
     public GamesListFromHashMap listGames() throws Exception {
         var path = "/game";
-        return this.makeRequest("GET", path, null, null);
+        GamesListFromHashMap games = this.makeRequest("GET", path, null, GamesListFromHashMap.class);
+        return games;
     }
-
-
-//    public void deletePet(int id) throws ResponseException {
-//        var path = String.format("/pet/%s", id);
-//        this.makeRequest("DELETE", path, null, null);
-//    }
 
     public void deleteAllGames() throws ResponseException {
         var path = "/db";

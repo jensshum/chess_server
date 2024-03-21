@@ -1,5 +1,6 @@
 package clientTests;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -7,6 +8,7 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import ui.ClientMain;
+import ui.EscapeSequences;
 import ui.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,7 +95,44 @@ public class ServerFacadeTests {
     public void createGame() throws Exception {
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
         GameData game = serverFacade.createGame("newGame");
-        System.out.print(game.getGameName());
+        serverFacade.listGames();
+    }
+
+    @Test
+    @DisplayName("Join Game")
+    public void joinGame() throws Exception {
+        AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+        GameData game = serverFacade.createGame("newGame");
+        serverFacade.gameJoin("black", 1);
+    }
+
+    @Test
+    @DisplayName("Bad join game")
+    public void badJoinGame() throws Exception {
+        AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+        GameData game = serverFacade.createGame("newGame");
+        try {
+            serverFacade.gameJoin("black", 2);
+        }
+        catch (ResponseException e){
+            assertEquals("failure: 403", e.getMessage());
+        }
+
+    }
+
+    @Test
+    @DisplayName("Test bad double join")
+    public void doubleJoin() throws Exception {
+        AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+        GameData game = serverFacade.createGame("newGame");
+        serverFacade.gameJoin("black", 1);
+        try {
+            serverFacade.gameJoin("black", 1);
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+            assertEquals("failure: 403", e.getMessage());
+        }
     }
 
 

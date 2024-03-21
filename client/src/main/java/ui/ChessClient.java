@@ -78,6 +78,7 @@ public class ChessClient {
         try {
             AuthData auth = facade.login(username, password);
             state = State.SIGNEDIN;
+            visitorName = username;
             return String.format("Hi %s! Welcome to Chess Online.\n", username);
 
         }
@@ -97,7 +98,7 @@ public class ChessClient {
             throw new ResponseException("Error. No game name.");
         }
         String game = facade.createGame(gameName).toString();
-        return String.format("Game: \"%s\" created! (Next enter \"join\" to join the game)\n", gameName);
+        return String.format("Game: \"%s\" created! (Next enter \"join\" to join a game)\n", gameName);
 
     }
 
@@ -105,24 +106,24 @@ public class ChessClient {
         assertSignedIn();
         GamesListFromHashMap games = facade.listGames();
         for (GameData g : games.getGames()) {
-            System.out.println(g.getGameID() + "," + g.getGameName());
+            System.out.println(g.getGameID() + ": " + g.getGameName());
         }
         return "";
     }
 
     public String joinGame(Scanner s) throws Exception {
         assertSignedIn();
+        System.out.print("Enter game number:\n>>> ");
+        int gameId = s.nextInt();
         System.out.print("Join as a (p)layer or (o)bserver?\n>>> ");
         String playerType = s.nextLine();
         if (Objects.equals(playerType, "o") || Objects.equals(playerType, "observer")) {
-            System.out.print("Enter game number:\n>>> ");
-            int gameId = s.nextInt();
             System.out.print(String.format("Observing game %d.", gameId));
             facade.gameJoin("", gameId);
         }
         else {
             System.out.print("Enter game number:\n>>> ");
-            int gameId = s.nextInt();
+            gameId = s.nextInt();
             System.out.print("Join as (w)hite or (b)lack?\n>>> ");
             String color = s.nextLine();
             if (Objects.equals(color, "w") || Objects.equals(color, "white")) {
@@ -175,9 +176,10 @@ public class ChessClient {
 //
     public String signOut() throws Exception {
         assertSignedIn();
+        String thing = String.format("%s left the game. Bye!\n", visitorName);
         state = State.SIGNEDOUT;
         facade.logout();
-        return String.format("%s left the game. Bye!", visitorName);
+        return thing;
     }
 //
 //    private Pet getPet(int id) throws ResponseException {

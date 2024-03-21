@@ -41,7 +41,6 @@ public class ServerHandler {
         }
     }
 
-
     public Object loginUser(Request req, Response res) throws Exception{
         var user = new Gson().fromJson(req.body(), UserData.class);
         AuthData newAuth = authService.login(user);

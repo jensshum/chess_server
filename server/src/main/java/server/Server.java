@@ -31,7 +31,6 @@ public class Server {
         return Spark.port();
     }
 
-
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
