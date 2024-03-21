@@ -1,4 +1,4 @@
-package clientTests;
+package test.clientTests;
 
 import chess.ChessGame;
 import exception.ResponseException;
@@ -45,7 +45,7 @@ public class ServerFacadeTests {
     @DisplayName("Test Register")
     public void testRegister() throws Exception{
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
-        assertNotNull(auth);
+        Assertions.assertNotNull(auth);
     }
 
     @Test
@@ -55,20 +55,20 @@ public class ServerFacadeTests {
             AuthData auth = serverFacade.register("", "", "");
         }
         catch(exception.ResponseException e) {
-            assertNotNull(e);
+            Assertions.assertNotNull(e);
         }
     }
 
     @Test
     @DisplayName("New TEst")
     public void newTest() {
-        assertNotNull("e");
+        Assertions.assertNotNull("e");
     }
 
     @Test
     @DisplayName("Null Test")
     public void nullTest() {
-        assertNull(null);
+        Assertions.assertNull(null);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ServerFacadeTests {
     public void testLogin() throws Exception{
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
         serverFacade.login(existingUsername, existingPassword);
-        assertNull(null);
+        Assertions.assertNull(null);
 
     }
 
@@ -87,7 +87,7 @@ public class ServerFacadeTests {
             AuthData auth2 = serverFacade.login("jensshum", "wilberforce1");
         }
         catch(exception.ResponseException e) {
-            assertNotNull(e);
+            Assertions.assertNotNull(e);
 
         }
     }
@@ -97,7 +97,7 @@ public class ServerFacadeTests {
     public void testLogout() throws Exception {
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
         serverFacade.logout();
-        assertNull(null);
+        Assertions.assertNull(null);
 
 
     }
@@ -109,7 +109,7 @@ public class ServerFacadeTests {
             serverFacade.logout();
         }
         catch (ResponseException e) {
-            assertEquals("failure: 401", e.getMessage());
+            Assertions.assertEquals("failure: 401", e.getMessage());
         }
     }
 
@@ -119,7 +119,7 @@ public class ServerFacadeTests {
     @DisplayName("Delete all")
     public void deleteAll() throws Exception {
         serverFacade.deleteAllGames();
-        assertNull(null);
+        Assertions.assertNull(null);
 
     }
 
@@ -128,18 +128,18 @@ public class ServerFacadeTests {
     public void createGame() throws Exception {
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
         GameData game = serverFacade.createGame("newGame");
-        assertNotNull(game);
+        Assertions.assertNotNull(game);
     }
 
     @Test
     @DisplayName("Bad create Game")
     public void badCreate() throws Exception {
         try {
-            assertNotNull(serverFacade.createGame("newG"));
+            Assertions.assertNotNull(serverFacade.createGame("newG"));
         }
         catch (ResponseException e) {
             System.out.println(e.getMessage());
-            assertNull(null);
+            Assertions.assertNull(null);
 
         }
     }
@@ -149,7 +149,7 @@ public class ServerFacadeTests {
     public void listGames() throws Exception {
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
         GameData game = serverFacade.createGame("newGame");
-        assertNotNull(serverFacade.listGames());
+        Assertions.assertNotNull(serverFacade.listGames());
     }
 
     @Test
@@ -159,7 +159,7 @@ public class ServerFacadeTests {
             serverFacade.listGames();
         }
         catch (ResponseException e) {
-            assertEquals("failure: 401", e.getMessage());
+            Assertions.assertEquals("failure: 401", e.getMessage());
         }
     }
 
@@ -168,7 +168,7 @@ public class ServerFacadeTests {
     public void noCreate() throws Exception {
         try {
             AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
-            assertNotNull(serverFacade.listGames());
+            Assertions.assertNotNull(serverFacade.listGames());
         }
         catch (ResponseException e) {
             System.out.println(e.getMessage());
@@ -181,7 +181,7 @@ public class ServerFacadeTests {
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
         GameData game = serverFacade.createGame("newGame");
         serverFacade.gameJoin("black", 1);
-        assertNull(null);
+        Assertions.assertNull(null);
 
     }
 
@@ -194,7 +194,7 @@ public class ServerFacadeTests {
             serverFacade.gameJoin("black", 2);
         }
         catch (ResponseException e){
-            assertEquals("failure: 403", e.getMessage());
+            Assertions.assertEquals("failure: 403", e.getMessage());
         }
 
     }
@@ -210,7 +210,7 @@ public class ServerFacadeTests {
         }
         catch (ResponseException e) {
             System.out.println(e.getMessage());
-            assertEquals("failure: 403", e.getMessage());
+            Assertions.assertEquals("failure: 403", e.getMessage());
         }
     }
 
@@ -218,7 +218,7 @@ public class ServerFacadeTests {
     @AfterAll
     static void stopServer() {
         server.stop();
-        assertNull(null);
+        Assertions.assertNull(null);
 
     }
 
