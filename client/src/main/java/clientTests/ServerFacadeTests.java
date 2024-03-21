@@ -19,6 +19,9 @@ public class ServerFacadeTests {
     private static Server server;
     private static ServerFacade serverFacade;
 
+    String existingUsername = "jensshum";
+    String existingPassword = "wilberforce1";
+
 
     private static ClientMain client;
     @BeforeAll
@@ -27,6 +30,12 @@ public class ServerFacadeTests {
         var port = server.run(8081);
         System.out.println("Started test HTTP server on " + port);
         serverFacade = new ServerFacade("http://localhost:8081");
+        serverFacade.deleteAllGames();
+        AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+
+    }
+    @AfterEach
+    public void breakDown() throws Exception {
         serverFacade.deleteAllGames();
     }
 
@@ -53,15 +62,7 @@ public class ServerFacadeTests {
     @DisplayName("Test Login")
     public void testLogin() throws Exception{
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
-        try {
-            AuthData auth2 = serverFacade.login("", "wilberforce1");
-        }
-        catch (ResponseException e) {
-            System.out.println("Bloop");
-        }
-//        System.out.println(auth2.authToken());
-//        System.out.println(auth2);
-//        assertNotNull(auth2);
+        serverFacade.login(existingUsername, existingPassword);
     }
     @Test
     @DisplayName("Test bad Login")
@@ -84,6 +85,18 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("BadLogout")
+    public void badLogout() throws Exception {
+        try {
+            serverFacade.logout();
+        }
+        catch (ResponseException e) {
+            assertEquals("failure: 401", e.getMessage());
+        }
+    }
+
+
+    @Test
     @Order(2)
     @DisplayName("Delete all")
     public void deleteAll() throws Exception {
@@ -95,8 +108,29 @@ public class ServerFacadeTests {
     public void createGame() throws Exception {
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
         GameData game = serverFacade.createGame("newGame");
-        serverFacade.listGames();
+        assertNotNull(game);
     }
+
+    @Test
+    @DisplayName("List Games")
+    public void listGames() throws Exception {
+        AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+        GameData game = serverFacade.createGame("newGame");
+        assertNotNull(serverFacade.listGames());
+    }
+
+    @Test
+    @DisplayName("Bad List Games")
+    public void badListGames() throws Exception {
+        try {
+            serverFacade.listGames();
+        }
+        catch (ResponseException e) {
+            assertEquals("failure: 401", e.getMessage());
+        }
+    }
+
+
 
     @Test
     @DisplayName("Join Game")
