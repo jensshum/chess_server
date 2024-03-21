@@ -38,7 +38,6 @@ public class ServerFacadeTests {
     @AfterEach
     public void breakDown() throws Exception {
         serverFacade.deleteAllGames();
-        assertNull(null);
     }
 
     @Test
