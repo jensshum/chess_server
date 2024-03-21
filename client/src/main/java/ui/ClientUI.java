@@ -11,9 +11,7 @@ public class ClientUI {
     private static final int SQUARE_SIZE_IN_CHARS = 2;
     private static final int LINE_WIDTH_IN_CHARS = 2;
     private int rowNum;
-
     private static final String EMPTY = " ";
-    private static Random rand = new Random();
 
     public static void main(String[] args) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
@@ -132,7 +130,7 @@ public class ClientUI {
         out.print(SET_BG_COLOR_DARK_GREY);
     }
 
-    private static void drawBoard(PrintStream out, boolean reverse) {
+    public static void drawBoard(PrintStream out, boolean reverse) {
         drawGraySquare(out, -1);
         drawHeaders(out, reverse);
         drawGraySquare(out, -1);

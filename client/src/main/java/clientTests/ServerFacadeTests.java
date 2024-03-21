@@ -112,6 +112,17 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Bad create Game")
+    public void badCreate() throws Exception {
+        try {
+            assertNotNull(serverFacade.createGame("newG"));
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Test
     @DisplayName("List Games")
     public void listGames() throws Exception {
         AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
@@ -130,7 +141,17 @@ public class ServerFacadeTests {
         }
     }
 
-
+    @Test
+    @DisplayName("List Games no create")
+    public void noCreate() throws Exception {
+        try {
+            AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+            assertNotNull(serverFacade.listGames());
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     @Test
     @DisplayName("Join Game")

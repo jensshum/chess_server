@@ -1,5 +1,7 @@
 package ui;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
@@ -7,6 +9,7 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import model.*;
 import exception.ResponseException;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.common.fields.ExcludeFieldIndexSelector;
 import server.Server;
 
 public class ChessClient {
@@ -35,9 +38,7 @@ public class ChessClient {
                 case "create" -> createGame(s);
                 case "join" -> joinGame(s);
                 case "logout" -> signOut();
-//                case "join" -> adoptPet(params);
                 case "list" -> listGames(s);
-//                case "joinobserver" -> adoptAllPets();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -80,7 +81,6 @@ public class ChessClient {
             state = State.SIGNEDIN;
             visitorName = username;
             return String.format("Hi %s! Welcome to Chess Online.\n", username);
-
         }
         catch (ResponseException e) {
             System.out.println("Invalid login" + e.getMessage());
@@ -113,24 +113,40 @@ public class ChessClient {
 
     public String joinGame(Scanner s) throws Exception {
         assertSignedIn();
-        System.out.print("Enter game number:\n>>> ");
-        int gameId = s.nextInt();
+        ClientUI board = new ClientUI();
         System.out.print("Join as a (p)layer or (o)bserver?\n>>> ");
         String playerType = s.nextLine();
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         if (Objects.equals(playerType, "o") || Objects.equals(playerType, "observer")) {
+            System.out.print("Enter game number:\n>>> ");
+            int gameId = s.nextInt();
             System.out.print(String.format("Observing game %d.", gameId));
             facade.gameJoin("", gameId);
         }
         else {
             System.out.print("Enter game number:\n>>> ");
-            gameId = s.nextInt();
+            int gameId = s.nextInt();
             System.out.print("Join as (w)hite or (b)lack?\n>>> ");
             String color = s.nextLine();
             if (Objects.equals(color, "w") || Objects.equals(color, "white")) {
+                System.out.println();
+                ClientUI.drawBoard(out, false);
+                System.out.println();
+                System.out.println();
+                ClientUI.drawBoard(out, true);
+                System.out.println();
                 facade.gameJoin("white", gameId);
+
             }
             else {
+
                 facade.gameJoin("black", gameId);
+                System.out.println();
+                ClientUI.drawBoard(out, true);
+                System.out.println();
+                System.out.println();
+                ClientUI.drawBoard(out, false);
+                System.out.println();
             }
         }
         return "";
