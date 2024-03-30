@@ -2,33 +2,33 @@ package ui;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
-import com.google.gson.Gson;
 import model.*;
 import exception.ResponseException;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.common.fields.ExcludeFieldIndexSelector;
-import server.Server;
-
+import websocket.NotificationHandler;
 public class ChessClient {
     private String visitorName = null;
     private ServerFacade facade;
 
+    private final NotificationHandler notificationHandler;
+
+
     private String serverUrl;
     private State state = State.SIGNEDOUT;
 
-    public ChessClient(String serverUrl) {
+    public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         this.serverUrl = serverUrl;
         facade = new ServerFacade(serverUrl);
+        this.notificationHandler = notificationHandler;
+
     }
 
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
-//            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             Scanner s = new Scanner(System.in);
 
             return switch (cmd) {
@@ -152,44 +152,6 @@ public class ChessClient {
         return "";
     }
 
-//    public String listPets() throws ResponseException {
-//        assertSignedIn();
-//        var pets = server.listPets();
-//        var result = new StringBuilder();
-//        var gson = new Gson();
-//        for (var pet : pets) {
-//            result.append(gson.toJson(pet)).append('\n');
-//        }
-//        return result.toString();
-//    }
-
-//    public String adoptPet(String... params) throws ResponseException {
-//        assertSignedIn();
-//        if (params.length == 1) {
-//            try {
-//                var id = Integer.parseInt(params[0]);
-//                var pet = getPet(id);
-//                if (pet != null) {
-//                    server.deletePet(id);
-//                    return String.format("%s says %s", pet.name(), pet.sound());
-//                }
-//            } catch (NumberFormatException ignored) {
-//            }
-//        }
-//        throw new ResponseException(400, "Expected: <pet id>");
-//    }
-
-//    public String adoptAllPets() throws ResponseException {
-//        assertSignedIn();
-//        var buffer = new StringBuilder();
-//        for (var pet : server.listPets()) {
-//            buffer.append(String.format("%s says %s%n", pet.name(), pet.sound()));
-//        }
-//
-//        server.deleteAllPets();
-//        return buffer.toString();
-//    }
-//
     public String signOut() throws Exception {
         assertSignedIn();
         String thing = String.format("%s left the game. Bye!\n", visitorName);
@@ -197,15 +159,7 @@ public class ChessClient {
         facade.logout();
         return thing;
     }
-//
-//    private Pet getPet(int id) throws ResponseException {
-//        for (var pet : server.listPets()) {
-//            if (pet.id() == id) {
-//                return pet;
-//            }
-//        }
-//        return null;
-//    }
+
 
     public String help() {
         if (state == State.SIGNEDOUT) {

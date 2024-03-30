@@ -44,7 +44,7 @@ public class ServerFacadeTests {
     @Order(1)
     @DisplayName("Test Register")
     public void testRegister() throws Exception{
-        AuthData auth = serverFacade.register("jensshum", "wilberforce1", "email.com");
+        AuthData auth = serverFacade.register("jensshummy", "wilberforce1", "email.com");
         Assertions.assertNotNull(auth);
     }
 

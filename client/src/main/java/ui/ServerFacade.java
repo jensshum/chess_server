@@ -5,8 +5,6 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
-
-import javax.swing.plaf.IconUIResource;
 import java.io.*;
 import java.net.*;
 import java.util.Objects;
