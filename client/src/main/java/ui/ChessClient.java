@@ -12,6 +12,8 @@ public class ChessClient {
     private String visitorName = null;
     private ServerFacade facade;
 
+    private boolean inGame = false;
+
     private final NotificationHandler notificationHandler;
 
 
@@ -37,6 +39,11 @@ public class ChessClient {
                 case "register" -> register(s);
                 case "create" -> createGame(s);
                 case "join" -> joinGame(s);
+                case "redraw" -> redrawBoard();
+                case "leave" -> leaveGame();
+                case "move" -> makeMove();
+                case "resign" -> resign();
+                case "highlight" -> highlightValidMoves();
                 case "logout" -> signOut();
                 case "list" -> listGames(s);
                 case "quit" -> "quit";
@@ -45,6 +52,25 @@ public class ChessClient {
         } catch (Exception ex) {
             return ex.getMessage();
         }
+    }
+
+    public String redrawBoard() {
+        return "";
+    }
+    public String leaveGame() {
+        return "";
+    }
+
+    public String makeMove() {
+        return "";
+    }
+
+    public String resign() {
+        return "";
+    }
+
+    public String highlightValidMoves() {
+        return "";
     }
 
     public String register(Scanner s) throws ResponseException {
@@ -136,6 +162,7 @@ public class ChessClient {
                 ClientUI.drawBoard(out, true);
                 System.out.println();
                 facade.gameJoin("white", gameId);
+                inGame = true;
 
             }
             else {
@@ -147,6 +174,7 @@ public class ChessClient {
                 System.out.println();
                 ClientUI.drawBoard(out, false);
                 System.out.println();
+                inGame = true;
             }
         }
         return "";
@@ -170,14 +198,26 @@ public class ChessClient {
                     4. Quit
                     """;
         }
-        return """
-                1. Help
-                2. Logout
-                3. Create
-                4. List
-                5. Join
-                6. Quit
-                """;
+        else if (state == State.SIGNEDIN && !inGame) {
+            return """
+                    1. Help
+                    2. Logout
+                    3. Create
+                    4. List
+                    5. Join
+                    6. Quit
+                    """;
+        }
+        else {
+            return """
+            1. Help
+            2. Redraw
+            3. Leave
+            4. Move
+            5. Resign
+            6. Highlight
+            """;
+        }
     }
 
     private void assertSignedIn() throws ResponseException {
