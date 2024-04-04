@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import model.*;
+import server.websocket.WebSocketHandler;
 import service.AuthService;
 import service.GameService;
 import spark.Request;
@@ -16,9 +17,12 @@ public class ServerHandler {
     private final AuthService authService;
     private final GameService gameService;
 
+    private final WebSocketHandler webSocketHandler;
+
     public ServerHandler() {
         authService = new AuthService();
         gameService = new GameService();
+        webSocketHandler = new WebSocketHandler();
     }
     public Object deleteAllGames(Request req, Response res)  throws Exception{
         authService.clearDatabase();
@@ -102,6 +106,7 @@ public class ServerHandler {
     public Object joinGame(Request req, Response res) throws Exception {
         String authToken = req.headers("authorization");
         AuthData auth = new AuthData(authToken, "");
+//        webSocketHandler.makeNoise("Yes", "no");
         var joinGameData = new Gson().fromJson(req.body(), JoinGameData.class);
         if (Objects.equals(joinGameData.gameID(), 0)){
             res.status(400);

@@ -17,6 +17,10 @@ public class GameData {
         this.game = game;
     }
 
+    public ChessGame getGame() {
+        return game;
+    }
+
     public int getGameID() {
         return gameID;
     }

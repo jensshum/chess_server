@@ -1,5 +1,10 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPosition;
+import model.GameData;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -130,22 +135,29 @@ public class ClientUI {
         out.print(SET_BG_COLOR_DARK_GREY);
     }
 
-    public static void drawBoard(PrintStream out, boolean reverse) {
+    public static void drawBoard(PrintStream out, boolean reverse, ChessGame gameData) {
         drawGraySquare(out, -1);
         drawHeaders(out, reverse);
         drawGraySquare(out, -1);
         out.println();
         int rowNum = reverse ? 1 : 8;
         String couleur = "white";
+
+        ChessBoard board = gameData.getBoard();
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES ; row++) {
-            String[] pieces = {"R", "N", "B", "K", "Q", "B", "N", "R"};
-            if (row == 1 || row == 6) {
-                pieces = new String[]{"P", "P", "P", "P", "P", "P", "P", "P"};
+            String[] pieces = new String[8];
+            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
+                try {
+                    pieces[col] = board.getPiece(new ChessPosition(row+1, col+1)).pieceLetter();
+                }
+                catch (NullPointerException e) {
+                    pieces[col] = "";
+                }
             }
             drawGraySquare(out, rowNum);
             drawRow(out, couleur, rowNum, pieces, reverse);
             if (reverse) rowNum++; else rowNum--;
-            couleur = (couleur == "white") ? "black" : "white";
+            couleur = (couleur.equals("white")) ? "black" : "white";
         }
         drawGraySquare(out, -1);
         drawHeaders(out, reverse);
@@ -154,10 +166,11 @@ public class ClientUI {
 
 
     private static void drawBoards(PrintStream out) {
-        drawBoard(out, true);
+        ChessGame game = new ChessGame();
+        drawBoard(out, true, game);
         out.println();
         setBlack(out);
         out.println();
-        drawBoard(out, false);
+        drawBoard(out, false, game);
     }
 }

@@ -6,19 +6,25 @@ import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import exception.ResponseException;
 import dataAccess.DatabaseManager;
+import server.websocket.WebSocketHandler;
 import spark.*;
 
 public class Server {
 
     private ServerHandler handler;
+    private final WebSocketHandler webSocketHandler;
     public Server() {
         handler = new ServerHandler();
+        webSocketHandler = new WebSocketHandler();
 
     }
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+        Spark.webSocket("/connect", webSocketHandler);
+
+
         Spark.delete("/db", (req, res) -> handler.deleteAllGames(req, res));
         Spark.post("/user", (req, res) -> handler.registerUser(req, res));
         Spark.post("/session", (req, res) -> handler.loginUser(req, res));

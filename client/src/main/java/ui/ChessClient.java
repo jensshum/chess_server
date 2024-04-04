@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Scanner;
 
+import chess.ChessGame;
+import websocket.WebSocketFacade;
 import model.*;
 import exception.ResponseException;
 import websocket.NotificationHandler;
@@ -12,11 +14,10 @@ public class ChessClient {
     private String visitorName = null;
     private ServerFacade facade;
 
+    private AuthData signedIn;
     private boolean inGame = false;
-
     private final NotificationHandler notificationHandler;
-
-
+    private WebSocketFacade ws;
     private String serverUrl;
     private State state = State.SIGNEDOUT;
 
@@ -84,12 +85,12 @@ public class ChessClient {
             AuthData response = facade.register(username, password, email);
             state = State.SIGNEDIN;
             visitorName = username;
+            signedIn = response;
             return String.format("Hi %s! Welcome to Chess Online.\n", username);
         }
         catch (ResponseException e) {
             System.out.println("Invalid register. " + e.getMessage());
             help();
-
         }
         return "";
     }
@@ -104,6 +105,7 @@ public class ChessClient {
         }
         try {
             AuthData auth = facade.login(username, password);
+            signedIn = auth;
             state = State.SIGNEDIN;
             visitorName = username;
             return String.format("Hi %s! Welcome to Chess Online.\n", username);
@@ -134,6 +136,9 @@ public class ChessClient {
         for (GameData g : games.getGames()) {
             System.out.println(g.getGameID() + ": " + g.getGameName());
         }
+        if (games.getGames().size() == 0) {
+            System.out.println("No games found.");
+        }
         return "";
     }
 
@@ -142,39 +147,56 @@ public class ChessClient {
         ClientUI board = new ClientUI();
         System.out.print("Join as a (p)layer or (o)bserver?\n>>> ");
         String playerType = s.nextLine();
+        while (!playerType.equalsIgnoreCase("p") && !playerType.equalsIgnoreCase("o") && !playerType.equalsIgnoreCase("player") && !playerType.equalsIgnoreCase("observer")) {
+            System.out.print("Please input a valid player type.\n>>>");
+            playerType = s.nextLine();
+        }
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         if (Objects.equals(playerType, "o") || Objects.equals(playerType, "observer")) {
             System.out.print("Enter game number:\n>>> ");
             int gameId = s.nextInt();
             System.out.print(String.format("Observing game %d.", gameId));
             facade.gameJoin("", gameId);
-        }
-        else {
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.joinObserver(gameId, signedIn.authToken());
+
+        } else {
             System.out.print("Enter game number:\n>>> ");
             int gameId = s.nextInt();
-            System.out.print("Join as (w)hite or (b)lack?\n>>> ");
+            System.out.print("Join as (w)hite or (b)lack?\n>>>");
             String color = s.nextLine();
-            if (Objects.equals(color, "w") || Objects.equals(color, "white")) {
-                System.out.println();
-                ClientUI.drawBoard(out, false);
-                System.out.println();
-                System.out.println();
-                ClientUI.drawBoard(out, true);
-                System.out.println();
-                facade.gameJoin("white", gameId);
-                inGame = true;
-
+            while (!color.equalsIgnoreCase("w") && !color.equalsIgnoreCase("b") && !color.equalsIgnoreCase("white") && !color.equalsIgnoreCase("black")) {
+                System.out.print("\"" + color + "\"" + " is not a valid color. (use \"b\" or \"w\")\n>>>");
+                color = s.nextLine();
             }
-            else {
+            try {
+                if (color.equalsIgnoreCase("w") || color.equalsIgnoreCase("white")) {
+                    GameData game = facade.gameJoin("white", gameId);
+                    System.out.println();
+                    ClientUI.drawBoard(out, false, game.getGame());
+                    System.out.println();
+                    System.out.println();
+                    ClientUI.drawBoard(out, true, game.getGame());
+                    System.out.println();
+                    inGame = true;
 
-                facade.gameJoin("black", gameId);
-                System.out.println();
-                ClientUI.drawBoard(out, true);
-                System.out.println();
-                System.out.println();
-                ClientUI.drawBoard(out, false);
-                System.out.println();
-                inGame = true;
+                    help();
+                } else if (color.equalsIgnoreCase("b") || color.equalsIgnoreCase("black")) {
+                    facade.gameJoin("black", gameId);
+                    ChessGame game = new ChessGame();
+                    System.out.println();
+                    ClientUI.drawBoard(out, true, game);
+                    System.out.println();
+                    System.out.println();
+                    ClientUI.drawBoard(out, false, game);
+                    System.out.println();
+                    inGame = true;
+                    help();
+                }
+            }
+            catch (ResponseException e) {
+                System.out.println("Already taken.");
+                help();
             }
         }
         return "";
@@ -185,6 +207,8 @@ public class ChessClient {
         String thing = String.format("%s left the game. Bye!\n", visitorName);
         state = State.SIGNEDOUT;
         facade.logout();
+        ws.leaveChess(visitorName);
+        ws = null;
         return thing;
     }
 
@@ -211,11 +235,11 @@ public class ChessClient {
         else {
             return """
             1. Help
-            2. Redraw
+            2. [Redraw] board
             3. Leave
-            4. Move
+            4. [Move] piece
             5. Resign
-            6. Highlight
+            6. [Highlight] valid moves
             """;
         }
     }

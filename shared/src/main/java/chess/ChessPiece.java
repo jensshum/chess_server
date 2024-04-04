@@ -285,6 +285,27 @@ public class ChessPiece implements Cloneable{
                '}';
     }
 
+    public String pieceLetter() {
+        switch(pieceType) {
+            case KING:
+                return "K";
+            case QUEEN:
+                return "Q";
+            case BISHOP:
+                return "B";
+            case ROOK:
+                return "R";
+            case KNIGHT:
+                return "N";
+            case PAWN:
+                return "P";
+            case null:
+                return "";
+            default:
+                return "";
+        }
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> legalMoves = null;
         switch (pieceType) {

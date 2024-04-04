@@ -62,7 +62,7 @@ public class ServerFacade {
                 newJoiner = new JoinGameData(ChessGame.TeamColor.WHITE, gameId);
             }
         }
-        return this.makeRequest("PUT", path, newJoiner, null);
+        return this.makeRequest("PUT", path, newJoiner, GameData.class);
 
     }
 
@@ -108,6 +108,7 @@ public class ServerFacade {
 
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
+        System.out.println(status);
         if (!isSuccessful(status)) {
             throw new ResponseException("failure: " + status);
         }
