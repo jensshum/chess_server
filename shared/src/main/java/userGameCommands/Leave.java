@@ -4,5 +4,12 @@ public class Leave extends UserGameCommand{
 
     private int gameID;
 
-    CommandType commandType = CommandType.LEAVE;
+    public Leave(int gameID, String username, String authToken) {
+        this.gameID = gameID;
+        this.commandType = CommandType.LEAVE;
+        setUsername(username);
+        setAuthToken(authToken);
+
+    }
+
 }

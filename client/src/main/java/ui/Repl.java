@@ -9,11 +9,11 @@ import websocket.NotificationHandler;
 import java.util.Scanner;
 
 
-public class Repl implements NotificationHandler{
+public class Repl{
     private final ChessClient client;
 
     public Repl(String serverUrl) {
-        client = new ChessClient(serverUrl, this);
+        client = new ChessClient(serverUrl);
 
     }
 
@@ -42,9 +42,5 @@ public class Repl implements NotificationHandler{
         System.out.print(">>> " + SET_TEXT_COLOR_GREEN);
     }
 
-    @Override
-    public void notify(Notification notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.message());
-        printPrompt();
-    }
+
 }

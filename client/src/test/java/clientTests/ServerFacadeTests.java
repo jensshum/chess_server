@@ -113,14 +113,12 @@ public class ServerFacadeTests {
         }
     }
 
-
     @Test
     @Order(2)
     @DisplayName("Delete all")
     public void deleteAll() throws Exception {
         serverFacade.deleteAllGames();
         Assertions.assertNull(null);
-
     }
 
     @Test

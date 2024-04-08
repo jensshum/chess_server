@@ -233,7 +233,7 @@ public class SQLAuthDAO implements AuthDAO{
         return game;
     }
 
-    private GameData selectGame(String gameName, int id) throws Exception {
+    public GameData selectGame(String gameName, int id) throws Exception {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "";
             if (gameName == "") {
