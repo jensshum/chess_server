@@ -45,7 +45,7 @@ public class ClientUI {
     }
 
 
-    private static void drawRowLogic(PrintStream out, String squareColor, int rowNum, ChessPiece[] pieces, ArrayList<ChessPosition> positionsToHighlight, int col, int pieceIndex) {
+    private static void drawRowLogic(PrintStream out, String squareColor, boolean reverse, int rowNum, ChessPiece[] pieces, ArrayList<ChessPosition> positionsToHighlight, int col, int pieceIndex) {
 
         int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
         int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
@@ -119,20 +119,11 @@ public class ClientUI {
     private static void drawRow(PrintStream out, String squareColor, int rowNum, ChessPiece[] pieces, boolean reverse, ArrayList<ChessPosition> positionsToHighlight) {
 
         int pieceIndex = 0;
-//        if (!reverse) {
-            for (int col = BOARD_SIZE_IN_SQUARES; col > 0; col--) {
-                drawRowLogic(out, squareColor, rowNum, pieces, positionsToHighlight, col, pieceIndex);
-                pieceIndex++;
-                squareColor = (squareColor.equals("white")) ? "black" : "white";
-            }
-//        }
-//        else {
-//            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
-//                drawRowLogic(out, squareColor, rowNum, pieces, positionsToHighlight, col, pieceIndex);
-//                pieceIndex++;
-//                squareColor = (squareColor.equals("white")) ? "black" : "white";
-//            }
-//        }
+        for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
+            drawRowLogic(out, squareColor, reverse, rowNum, pieces, positionsToHighlight, col, pieceIndex);
+            pieceIndex++;
+            squareColor = (squareColor.equals("white")) ? "black" : "white";
+        }
         drawGraySquare(out, rowNum);
         out.println();
     }
@@ -199,8 +190,15 @@ public class ClientUI {
             ArrayList<ChessPosition> validPositions = new ArrayList<>();
             if (highlightMoves != null) {
                 for (ChessMove move : highlightMoves) {
-                    if (row+1 == move.getEndPosition().getRow()) {
-                        validPositions.add(move.getEndPosition());
+                    if (reverse) {
+                        if (row + 1 == move.getEndPosition().getRow()) {
+                            validPositions.add(move.getEndPosition());
+                        }
+                    }
+                    else {
+                        if (8 - row == move.getEndPosition().getRow()) {
+                            validPositions.add(move.getEndPosition());
+                        }
                     }
                 }
             }
