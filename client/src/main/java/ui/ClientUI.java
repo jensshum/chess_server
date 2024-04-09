@@ -1,12 +1,13 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPosition;
+import chess.*;
 import model.GameData;
 
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 import static ui.EscapeSequences.*;
@@ -36,50 +37,67 @@ public class ClientUI {
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
-    private static void drawRow(PrintStream out, String squareColor, int rowNum, String[] pieces, boolean reverse) {
+    private static void setLightGreen(PrintStream out) {
+        out.print(SET_BG_COLOR_GREEN);
+        out.print(SET_TEXT_COLOR_BLACK);
+    }
+
+    private static void drawRow(PrintStream out, String squareColor, int rowNum, ChessPiece[] pieces, boolean reverse, ArrayList<ChessPosition> positionsToHighlight) {
         int pieceIndex = 0;
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 1; col++ ) {
-                if (squareColor == "white") setWhite(out);
-                else setBlack(out);
-                if (rowNum > 6 || rowNum < 3) {
-                    int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-                    int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
-                    out.print(EMPTY.repeat(prefixLength));
-                    if (rowNum > 6)
-                        out.print(SET_TEXT_COLOR_BLUE);
-                    else {
-                        out.print(SET_TEXT_COLOR_RED);
+        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
+        int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
+        for (int row = 0; row < BOARD_SIZE_IN_SQUARES; row++) {
+            for (ChessPosition position : positionsToHighlight) {
+
+            }
+                if (squareColor == "white") {
+                    setWhite(out);
+                    if (pieces[pieceIndex] != null) {
+                        if (pieces[pieceIndex].getTeamColor() == ChessGame.TeamColor.BLACK) {
+                            out.print(SET_TEXT_COLOR_RED);
+                            out.print(EMPTY.repeat(prefixLength));
+                            out.print(pieces[pieceIndex].pieceLetter());
+                            out.print(EMPTY.repeat(suffixLength));
+                            pieceIndex++;
+                            squareColor = (squareColor.equals("white")) ? "black" : "white";
+                        } else {
+                            out.print(SET_TEXT_COLOR_BLUE);
+                            out.print(EMPTY.repeat(prefixLength));
+                            out.print(pieces[pieceIndex].pieceLetter());
+                            out.print(EMPTY.repeat(suffixLength));
+                            pieceIndex++;
+                            squareColor = (squareColor.equals("white")) ? "black" : "white";
+                        }
                     }
-                    out.print(pieces[pieceIndex]);
-                    pieceIndex++;
-                    out.print(EMPTY.repeat(suffixLength));
+                    else {
+                        out.print(EMPTY.repeat(3));
+                        squareColor = (squareColor.equals("white")) ? "black" : "white";
+                    }
                 }
                 else {
-                    out.print(EMPTY.repeat(3));
-                }
-
-                if (squareColor == "white")
-                out.print(SET_BG_COLOR_BLACK);
-                else out.print(SET_BG_COLOR_WHITE);
-                if (rowNum > 6 || rowNum < 3) {
-                    int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-                    int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
-                    out.print(EMPTY.repeat(prefixLength));
-                    if (rowNum > 6)
-                        out.print(SET_TEXT_COLOR_BLUE);
-                    else {
-                        out.print(SET_TEXT_COLOR_RED);
+                    setBlack(out);
+                    if (pieces[pieceIndex] != null) {
+                        if (pieces[pieceIndex].getTeamColor() == ChessGame.TeamColor.BLACK) {
+                            out.print(SET_TEXT_COLOR_RED);
+                            out.print(EMPTY.repeat(prefixLength));
+                            out.print(pieces[pieceIndex].pieceLetter());
+                            out.print(EMPTY.repeat(suffixLength));
+                            pieceIndex++;
+                            squareColor = (squareColor.equals("white")) ? "black" : "white";
+                        } else {
+                            out.print(SET_TEXT_COLOR_BLUE);
+                            out.print(EMPTY.repeat(prefixLength));
+                            out.print(pieces[pieceIndex].pieceLetter());
+                            out.print(EMPTY.repeat(suffixLength));
+                            pieceIndex++;
+                            squareColor = (squareColor.equals("white")) ? "black" : "white";
+                        }
                     }
-                    out.print(pieces[pieceIndex]);
-                    pieceIndex++;
-                    out.print(EMPTY.repeat(suffixLength));
+                    else {
+                        out.print(EMPTY.repeat(3));
+                        squareColor = (squareColor.equals("white")) ? "black" : "white";
+                    }
                 }
-                else
-                {
-                    out.print(EMPTY.repeat(3));
-                }
-            }
             out.print(SET_BG_COLOR_DARK_GREY);
         }
         drawGraySquare(out, rowNum);
@@ -135,27 +153,34 @@ public class ClientUI {
         out.print(SET_BG_COLOR_DARK_GREY);
     }
 
-    public static void drawBoard(PrintStream out, boolean reverse, ChessGame gameData) {
+    public static void drawBoard(PrintStream out, boolean reverse, ChessGame gameData, Collection<ChessMove> highlightMoves) {
         drawGraySquare(out, -1);
         drawHeaders(out, reverse);
         drawGraySquare(out, -1);
         out.println();
         int rowNum = reverse ? 1 : 8;
         String couleur = "white";
-
         ChessBoard board = gameData.getBoard();
+
+        ArrayList<ChessPosition> validPositions = new ArrayList<>();
+        if (highlightMoves != null) {
+            for (ChessMove move : highlightMoves) {
+                validPositions.add(move.getEndPosition());
+            }
+        }
+
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES ; row++) {
-            String[] pieces = new String[8];
+            ChessPiece[] pieces = new ChessPiece[8];
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
                 try {
-                    pieces[col] = board.getPiece(new ChessPosition(row+1, col+1)).pieceLetter();
+                    pieces[col] = board.getPiece(new ChessPosition(row+1, col+1));
                 }
                 catch (NullPointerException e) {
-                    pieces[col] = "";
+                    pieces[col] = null;
                 }
             }
             drawGraySquare(out, rowNum);
-            drawRow(out, couleur, rowNum, pieces, reverse);
+            drawRow(out, couleur, rowNum, pieces, reverse, validPositions);
             if (reverse) rowNum++; else rowNum--;
             couleur = (couleur.equals("white")) ? "black" : "white";
         }
@@ -167,10 +192,10 @@ public class ClientUI {
 
     private static void drawBoards(PrintStream out) {
         ChessGame game = new ChessGame();
-        drawBoard(out, true, game);
+        drawBoard(out, true, game, null);
         out.println();
         setBlack(out);
         out.println();
-        drawBoard(out, false, game);
+        drawBoard(out, false, game, null);
     }
 }
