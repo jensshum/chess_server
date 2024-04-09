@@ -3,11 +3,13 @@ package ui;
 import chess.*;
 import model.GameData;
 
+import javax.swing.text.Position;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Random;
 
 import static ui.EscapeSequences.*;
@@ -42,64 +44,95 @@ public class ClientUI {
         out.print(SET_TEXT_COLOR_BLACK);
     }
 
-    private static void drawRow(PrintStream out, String squareColor, int rowNum, ChessPiece[] pieces, boolean reverse, ArrayList<ChessPosition> positionsToHighlight) {
-        int pieceIndex = 0;
+
+    private static void drawRowLogic(PrintStream out, String squareColor, int rowNum, ChessPiece[] pieces, ArrayList<ChessPosition> positionsToHighlight, int col, int pieceIndex) {
+
         int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
         int suffixLength = SQUARE_SIZE_IN_CHARS - 1;
-        for (int row = 0; row < BOARD_SIZE_IN_SQUARES; row++) {
-            for (ChessPosition position : positionsToHighlight) {
-
+        if (Objects.equals(squareColor, "white")) {
+            if (!positionsToHighlight.isEmpty()) {
+                for (ChessPosition position : positionsToHighlight) {
+                    if (position.getColumn() == col+1) {
+                        setLightGreen(out);
+                        break;
+                    }
+                    else{
+                        setWhite(out);
+                    }
+                }
             }
-                if (squareColor == "white") {
-                    setWhite(out);
-                    if (pieces[pieceIndex] != null) {
-                        if (pieces[pieceIndex].getTeamColor() == ChessGame.TeamColor.BLACK) {
-                            out.print(SET_TEXT_COLOR_RED);
-                            out.print(EMPTY.repeat(prefixLength));
-                            out.print(pieces[pieceIndex].pieceLetter());
-                            out.print(EMPTY.repeat(suffixLength));
-                            pieceIndex++;
-                            squareColor = (squareColor.equals("white")) ? "black" : "white";
-                        } else {
-                            out.print(SET_TEXT_COLOR_BLUE);
-                            out.print(EMPTY.repeat(prefixLength));
-                            out.print(pieces[pieceIndex].pieceLetter());
-                            out.print(EMPTY.repeat(suffixLength));
-                            pieceIndex++;
-                            squareColor = (squareColor.equals("white")) ? "black" : "white";
-                        }
-                    }
-                    else {
-                        out.print(EMPTY.repeat(3));
-                        squareColor = (squareColor.equals("white")) ? "black" : "white";
-                    }
+            else {
+                setWhite(out);
+            }
+            if (pieces[pieceIndex] != null) {
+                if (pieces[pieceIndex].getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    out.print(SET_TEXT_COLOR_RED);
+                    out.print(EMPTY.repeat(prefixLength));
+                    out.print(pieces[pieceIndex].pieceLetter());
+                    out.print(EMPTY.repeat(suffixLength));
+                } else {
+                    out.print(SET_TEXT_COLOR_BLUE);
+                    out.print(EMPTY.repeat(prefixLength));
+                    out.print(pieces[pieceIndex].pieceLetter());
+                    out.print(EMPTY.repeat(suffixLength));
                 }
-                else {
-                    setBlack(out);
-                    if (pieces[pieceIndex] != null) {
-                        if (pieces[pieceIndex].getTeamColor() == ChessGame.TeamColor.BLACK) {
-                            out.print(SET_TEXT_COLOR_RED);
-                            out.print(EMPTY.repeat(prefixLength));
-                            out.print(pieces[pieceIndex].pieceLetter());
-                            out.print(EMPTY.repeat(suffixLength));
-                            pieceIndex++;
-                            squareColor = (squareColor.equals("white")) ? "black" : "white";
-                        } else {
-                            out.print(SET_TEXT_COLOR_BLUE);
-                            out.print(EMPTY.repeat(prefixLength));
-                            out.print(pieces[pieceIndex].pieceLetter());
-                            out.print(EMPTY.repeat(suffixLength));
-                            pieceIndex++;
-                            squareColor = (squareColor.equals("white")) ? "black" : "white";
-                        }
-                    }
-                    else {
-                        out.print(EMPTY.repeat(3));
-                        squareColor = (squareColor.equals("white")) ? "black" : "white";
-                    }
-                }
-            out.print(SET_BG_COLOR_DARK_GREY);
+            }
+            else {
+                out.print(EMPTY.repeat(3));
+            }
         }
+        else {
+            if (!positionsToHighlight.isEmpty()) {
+                for (ChessPosition position : positionsToHighlight) {
+                    if (position.getColumn() == col+1) {
+                        out.print(SET_BG_COLOR_DARK_GREEN);
+                        out.print(SET_TEXT_COLOR_BLACK);
+                        break;
+                    }
+                    else{
+                        setBlack(out);
+                    }
+                }
+            }
+            else {
+                setBlack(out);
+            }
+            if (pieces[pieceIndex] != null) {
+                if (pieces[pieceIndex].getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    out.print(SET_TEXT_COLOR_RED);
+                    out.print(EMPTY.repeat(prefixLength));
+                    out.print(pieces[pieceIndex].pieceLetter());
+                    out.print(EMPTY.repeat(suffixLength));
+                } else {
+                    out.print(SET_TEXT_COLOR_BLUE);
+                    out.print(EMPTY.repeat(prefixLength));
+                    out.print(pieces[pieceIndex].pieceLetter());
+                    out.print(EMPTY.repeat(suffixLength));
+                }
+            }
+            else {
+                out.print(EMPTY.repeat(3));
+            }
+        }
+        out.print(SET_BG_COLOR_DARK_GREY);
+    }
+    private static void drawRow(PrintStream out, String squareColor, int rowNum, ChessPiece[] pieces, boolean reverse, ArrayList<ChessPosition> positionsToHighlight) {
+
+        int pieceIndex = 0;
+//        if (!reverse) {
+            for (int col = BOARD_SIZE_IN_SQUARES; col > 0; col--) {
+                drawRowLogic(out, squareColor, rowNum, pieces, positionsToHighlight, col, pieceIndex);
+                pieceIndex++;
+                squareColor = (squareColor.equals("white")) ? "black" : "white";
+            }
+//        }
+//        else {
+//            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
+//                drawRowLogic(out, squareColor, rowNum, pieces, positionsToHighlight, col, pieceIndex);
+//                pieceIndex++;
+//                squareColor = (squareColor.equals("white")) ? "black" : "white";
+//            }
+//        }
         drawGraySquare(out, rowNum);
         out.println();
     }
@@ -162,14 +195,15 @@ public class ClientUI {
         String couleur = "white";
         ChessBoard board = gameData.getBoard();
 
-        ArrayList<ChessPosition> validPositions = new ArrayList<>();
-        if (highlightMoves != null) {
-            for (ChessMove move : highlightMoves) {
-                validPositions.add(move.getEndPosition());
-            }
-        }
-
         for (int row = 0; row < BOARD_SIZE_IN_SQUARES ; row++) {
+            ArrayList<ChessPosition> validPositions = new ArrayList<>();
+            if (highlightMoves != null) {
+                for (ChessMove move : highlightMoves) {
+                    if (row+1 == move.getEndPosition().getRow()) {
+                        validPositions.add(move.getEndPosition());
+                    }
+                }
+            }
             ChessPiece[] pieces = new ChessPiece[8];
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
                 try {
