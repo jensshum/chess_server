@@ -291,7 +291,17 @@ public class SQLAuthDAO implements AuthDAO{
         var insertStatement = "INSERT INTO games_table (game_id, white_username, black_username, game_name, game, json) VALUES (?, ?, ?, ?, ?, ?)";
         executeUpdate(insertStatement, gameId, null, null, gameName, chessGameJson, json);
         return game;
-    };
+    }
+
+    public void setGame(int gameID, ChessGame updateGame) throws Exception {
+        GameData gameData = selectGame(null, gameID);
+        var chessGameJson = new Gson().toJson(updateGame);
+        GameData game = new GameData(gameID, gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), updateGame);
+        var json = new Gson().toJson(game);
+        var updateStatement = "UPDATE games_table SET game = ?, json = ? WHERE game_id = ?";
+        executeUpdate(updateStatement, chessGameJson, json, gameID);
+    }
+
     public HashMap<Integer, GameData> games() throws Exception {
         HashMap<Integer, GameData> gamesMap = new HashMap<>();
         GameData gameCheck = selectGame("", 0);

@@ -19,6 +19,7 @@ import exception.ResponseException;
 import websocket.NotificationHandler;
 
 import static chess.ChessGame.TeamColor.WHITE;
+import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 
 public class ChessClient implements NotificationHandler{
@@ -57,7 +58,7 @@ public class ChessClient implements NotificationHandler{
                 case "leave" -> leaveGame();
                 case "move" -> makeMove(s);
                 case "resign" -> resign();
-                case "highlight" -> highlightValidMoves(s);
+                case "highlight" -> highlightValidMoves(s, null);
                 case "logout" -> signOut();
                 case "list" -> listGames(s);
                 case "quit" -> "quit";
@@ -69,6 +70,16 @@ public class ChessClient implements NotificationHandler{
     }
 
     public String redrawBoard() {
+        if (currColor == WHITE) {
+            System.out.println();
+            ClientUI.drawBoard(System.out, false, currentGame, null);
+            System.out.println();
+        }
+        else {
+            System.out.println();
+            ClientUI.drawBoard(System.out, true, currentGame, null);
+            System.out.println();
+        }
         return "";
     }
     public String leaveGame() {
@@ -119,7 +130,9 @@ public class ChessClient implements NotificationHandler{
     public String makeMove(Scanner s) throws Exception{
         assertSignedIn();
         String confirm = "n";
-        while (confirm.equalsIgnoreCase("n"))
+        boolean match = false;
+        ChessGame.TeamColor pieceColor = null;
+        while (confirm.equalsIgnoreCase("n") || !match)
         {
             System.out.print("Which piece would you like to move?\n(<number 1-8>,<letter a-h>)>>>");
             String pieceToMove = s.nextLine();
@@ -127,20 +140,53 @@ public class ChessClient implements NotificationHandler{
                 System.out.println("Invalid input. Please match the form <number 1-8>,<letter a-h>\n>>>");
                 pieceToMove = s.nextLine();
             }
-            System.out.print("Where would you like to move?\n[row,col]>>>");
-            String move = s.nextLine();
-            while (!isValidInput(move)) {
-                System.out.println("Invalid input. Please match the form <number 1-8>,<letter a-h>\n>>>");
-                move = s.nextLine();
-            }
-            System.out.print("Move piece on " + pieceToMove + "to " + move + "?\n(y or n)>>>");
-            confirm = s.nextLine();
-            if (confirm.equalsIgnoreCase("y")) {
-                ChessPosition startPosition = getPosition(pieceToMove);
-                ChessPosition endPosition = getPosition(move);
-                ChessMove toMove = new ChessMove(startPosition, endPosition, null);
-                ws.makeMove(inGameID, signedIn.authToken(), signedIn.username(), toMove);
-            }
+//            if (currColor == WHITE) {
+//                pieceColor = currentGame.getBoard().getPiece(getPosition(pieceToMove)).getTeamColor();
+//            }
+//            else {
+//                pieceColor = currentGame.getBoard().getPiece(getPosition(pieceToMove)).getTeamColor();
+//            }
+//            if (pieceColor == currColor) {
+                highlightValidMoves(s, pieceToMove);
+                System.out.print(SET_TEXT_COLOR_GREEN);
+                System.out.print("Where would you like to move?\n[row,col]>>>");
+                String move = s.nextLine();
+                while (!isValidInput(move)) {
+                    System.out.println("Invalid input. Please match the form <number 1-8>,<letter a-h>\n>>>");
+                    move = s.nextLine();
+                }
+                System.out.print("Move " + currentGame.getBoard().getPiece(getPosition(pieceToMove)).getPieceType().toString() +  " on " + pieceToMove + " to " + move + "?\n(y or n)>>>");
+                confirm = s.nextLine();
+                if (confirm.equalsIgnoreCase("y")) {
+                    ChessPosition startPosition = getPosition(pieceToMove);
+                    ChessPosition endPosition = null;
+                    if (currColor == WHITE) {
+                         endPosition = getPosition(move);
+                         endPosition = new ChessPosition(endPosition.getRow(), endPosition.getColumn());
+                    }
+                    else{
+                        endPosition = getPosition(move);
+                    }
+                    Collection<ChessMove> validMoves = currentGame.validMoves(getPosition(pieceToMove));
+                    ChessMove newMove = new ChessMove(getPosition(pieceToMove), getPosition(move), null);
+                    for (ChessMove validMove : validMoves) {
+                        if (validMove.equals(newMove)) {
+                            match = true;
+                        }
+                    }
+                    if (match) {
+                        ChessMove toMove = new ChessMove(startPosition, endPosition, null);
+                        ws.makeMove(inGameID, signedIn.authToken(), signedIn.username(), toMove);
+                        redrawBoard();
+                    }
+                    else {
+                        System.out.println("Not a valid move.");
+                    }
+                }
+//            }
+//            else{
+//                System.out.print("That's not your piece! Your color is " + currColor.toString() + ".\n");
+//            }
         }
         return "";
     }
@@ -149,24 +195,26 @@ public class ChessClient implements NotificationHandler{
         return "";
     }
 
-    public String highlightValidMoves(Scanner s) {
-        System.out.print("For which piece?\n(<1-8>,<a-h>)>>>");
-        String pieceToValidate = s.nextLine();
-        while (!isValidInput(pieceToValidate)) {
-            System.out.println("Invalid input. Please match the form <number 1-8>,<letter a-h>\n>>>");
+    public String highlightValidMoves(Scanner s, String pieceToValidate) {
+        if (pieceToValidate == null) {
+            System.out.print("For which piece?\n(<1-8>,<a-h>)>>>");
             pieceToValidate = s.nextLine();
+            while (!isValidInput(pieceToValidate)) {
+                System.out.println("Invalid input. Please match the form <number 1-8>,<letter a-h>\n>>>");
+                pieceToValidate = s.nextLine();
+            }
         }
         Collection<ChessMove> validMoves = currentGame.validMoves(getPosition(pieceToValidate));
         if (currColor == WHITE) {
             System.out.println();
             ClientUI.drawBoard(System.out, false, currentGame, validMoves);
             System.out.println();
-        }
-        else {
+        } else {
             System.out.println();
             ClientUI.drawBoard(System.out, true, currentGame, validMoves);
             System.out.println();
         }
+
         return "";
     }
 
@@ -257,6 +305,7 @@ public class ChessClient implements NotificationHandler{
             ws.joinObserver(inGameID, signedIn.authToken(), signedIn.username());
 
         } else {
+            listGames(s);
             System.out.print("Enter game number:\n>>> ");
             inGameID = s.nextInt();
             System.out.print("Join as (w)hite or (b)lack?\n>>>");
@@ -350,12 +399,12 @@ public class ChessClient implements NotificationHandler{
         currentGame = game.getGame();
         if (currColor == WHITE) {
             System.out.println();
-            ClientUI.drawBoard(System.out, false, game.getGame(), null);
+            ClientUI.drawBoard(System.out, false, currentGame, null);
             System.out.println();
         }
         else {
             System.out.println();
-            ClientUI.drawBoard(System.out, true, game.getGame(), null);
+            ClientUI.drawBoard(System.out, true, currentGame, null);
             System.out.println();
         }
 

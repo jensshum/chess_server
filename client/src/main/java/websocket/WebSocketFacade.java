@@ -48,8 +48,8 @@ public class WebSocketFacade extends Endpoint {
 
                         }
                         case ERROR -> {
-//                            Notification notification = new Gson().fromJson(message, Error.class);
-//                            notificationHandler.notify(notification);
+                            Notification error = new Gson().fromJson(message, Notification.class);
+                            notificationHandler.notify(error);
                         }
                     }
 
