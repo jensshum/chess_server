@@ -205,7 +205,12 @@ public class ClientUI {
             ChessPiece[] pieces = new ChessPiece[8];
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; col++) {
                 try {
-                    pieces[col] = board.getPiece(new ChessPosition(row+1, col+1));
+                    if (reverse) {
+                        pieces[col] = board.getPiece(new ChessPosition(row + 1, col + 1));
+                    }
+                    else {
+                        pieces[col] = board.getPiece(new ChessPosition(8 - row, col + 1));
+                    }
                 }
                 catch (NullPointerException e) {
                     pieces[col] = null;

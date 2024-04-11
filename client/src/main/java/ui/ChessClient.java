@@ -55,9 +55,9 @@ public class ChessClient implements NotificationHandler{
                 case "create" -> createGame(s);
                 case "join" -> joinGame(s);
                 case "redraw" -> redrawBoard();
-                case "leave" -> leaveGame();
+                case "leave" -> leaveGame(s);
                 case "move" -> makeMove(s);
-                case "resign" -> resign();
+                case "resign" -> resign(s);
                 case "highlight" -> highlightValidMoves(s, null);
                 case "logout" -> signOut();
                 case "list" -> listGames(s);
@@ -82,7 +82,14 @@ public class ChessClient implements NotificationHandler{
         }
         return "";
     }
-    public String leaveGame() {
+    public String leaveGame(Scanner s) throws ResponseException {
+        String input = "";
+        System.out.println("Would you like to leave the game?(y or n)\n>>>");
+        input = s.nextLine();
+        if (input.equalsIgnoreCase("y")){
+           ws.Leave(inGameID, signedIn.authToken(), signedIn.username());
+           inGame = false;
+        }
         return "";
     }
 
@@ -159,14 +166,7 @@ public class ChessClient implements NotificationHandler{
                 confirm = s.nextLine();
                 if (confirm.equalsIgnoreCase("y")) {
                     ChessPosition startPosition = getPosition(pieceToMove);
-                    ChessPosition endPosition = null;
-                    if (currColor == WHITE) {
-                         endPosition = getPosition(move);
-                         endPosition = new ChessPosition(endPosition.getRow(), endPosition.getColumn());
-                    }
-                    else{
-                        endPosition = getPosition(move);
-                    }
+                    ChessPosition endPosition = getPosition(move);
                     Collection<ChessMove> validMoves = currentGame.validMoves(getPosition(pieceToMove));
                     ChessMove newMove = new ChessMove(getPosition(pieceToMove), getPosition(move), null);
                     for (ChessMove validMove : validMoves) {
@@ -191,7 +191,13 @@ public class ChessClient implements NotificationHandler{
         return "";
     }
 
-    public String resign() {
+    public String resign(Scanner s) throws Exception{
+        System.out.println("Would you like to resign?");
+        String input = s.nextLine();
+        if (input.equalsIgnoreCase("y")) {
+            ws.resign(inGameID, signedIn.username());
+        }
+        inGame = false;
         return "";
     }
 
@@ -334,7 +340,7 @@ public class ChessClient implements NotificationHandler{
                 }
             }
             catch (ResponseException e) {
-                System.out.println("Already taken.");
+                System.out.println("Game not found, color is already taken, or game is over.");
                 help();
             }
         }

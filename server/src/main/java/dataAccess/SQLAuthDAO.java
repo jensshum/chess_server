@@ -293,13 +293,30 @@ public class SQLAuthDAO implements AuthDAO{
         return game;
     }
 
-    public void setGame(int gameID, ChessGame updateGame) throws Exception {
+    public void setGame(int gameID, ChessGame updateGame, String username) throws Exception {
         GameData gameData = selectGame(null, gameID);
-        var chessGameJson = new Gson().toJson(updateGame);
-        GameData game = new GameData(gameID, gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), updateGame);
-        var json = new Gson().toJson(game);
-        var updateStatement = "UPDATE games_table SET game = ?, json = ? WHERE game_id = ?";
-        executeUpdate(updateStatement, chessGameJson, json, gameID);
+        if (username.equals("")) {
+            var chessGameJson = new Gson().toJson(updateGame);
+            GameData game = new GameData(gameID, gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), updateGame);
+            var json = new Gson().toJson(game);
+            var updateStatement = "UPDATE games_table SET game = ?, json = ? WHERE game_id = ?";
+            executeUpdate(updateStatement, chessGameJson, json, gameID);
+        }
+        else {
+            if (gameData.getBlackUsername() != null){
+                GameData game = new GameData(gameID, gameData.getWhiteUsername(), null, gameData.getGameName(), gameData.getGame());
+                var json = new Gson().toJson(game);
+                var updateStatement = "UPDATE games_table SET black_username = ?, json = ? WHERE game_id = ?";
+                executeUpdate(updateStatement, null, json, gameID);
+
+            }
+            else if (gameData.getWhiteUsername() != null) {
+                GameData game = new GameData(gameID, null, gameData.getBlackUsername(), gameData.getGameName(), gameData.getGame());
+                var json = new Gson().toJson(game);
+                var updateStatement = "UPDATE games_table SET white_username = ?, json = ? WHERE game_id = ?";
+                executeUpdate(updateStatement, null, json, gameID);
+            }
+        }
     }
 
     public HashMap<Integer, GameData> games() throws Exception {

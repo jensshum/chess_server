@@ -11,10 +11,7 @@ import serverMessages.Error;
 import serverMessages.LoadGame;
 import serverMessages.Notification;
 import serverMessages.ServerMessage;
-import userGameCommands.JoinObserver;
-import userGameCommands.JoinPlayer;
-import userGameCommands.MakeMove;
-import userGameCommands.UserGameCommand;
+import userGameCommands.*;
 
 import dataAccess.SQLAuthDAO;
 
@@ -52,6 +49,8 @@ public class WebSocketHandler {
                 join(player.getGameID(), gameCommand.getUsername(), session, true, authToken, color);
             }
             case LEAVE -> {
+                Leave leaveCommand = new Gson().fromJson(message, Leave.class);
+                exit(leaveCommand.getGameID(), gameCommand.getUsername());
 
             }
             case MAKE_MOVE -> {
@@ -59,7 +58,8 @@ public class WebSocketHandler {
                 makeGameMove(gameCommand.getUsername(), session, move);
             }
             case RESIGN -> {
-
+                Resign resign = new Gson().fromJson(message, Resign.class);
+                resign(gameCommand.getUsername());
             }
 //            case EXIT -> exit(action.visitorName());
         }
@@ -128,7 +128,7 @@ public class WebSocketHandler {
             var message = visitorName + " has moved " + currGame.getBoard().getPiece(move.getMove().getEndPosition()).getPieceType().toString() + " to " + move.getMove().getEndPosition().getRow() + "," + move.getMove().getEndPosition().getColumn();
             ServerMessage notification = new Notification(message);
             ServerMessage LoadMessage = new LoadGame(currGame);
-            authDAO.setGame(move.getGameID(), currGame);
+            authDAO.setGame(move.getGameID(), currGame, "");
             connections.broadcast("", LoadMessage);
             connections.broadcast(visitorName, notification);
         }
@@ -138,13 +138,20 @@ public class WebSocketHandler {
         return currGameID == gameID;
     }
 
-//    private void exit(String visitorName) throws IOException {
-//        connections.remove(visitorName);
-//        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(visitorName, notification);
-//    }
+    private void exit(int gameID, String visitorName) throws Exception {
+        connections.remove(visitorName);
+        authDAO.setGame(gameID, currGame, visitorName);
+        var message = String.format("%s left the game.", visitorName);
+        ServerMessage notification = new Notification(message);
+        connections.broadcast(visitorName, notification);
+    }
 
+    private void resign(String username) throws Exception {
+        connections.remove(username);
+        var message = String.format("%s has resigned.", username);
+        ServerMessage notification = new Notification(message);
+        connections.broadcast(username, notification);
+    }
 //    public void makeNoise(String petName, String sound) throws ResponseException {
 //        try {
 //            var message = String.format("%s says %s", petName, sound);

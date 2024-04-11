@@ -129,6 +129,7 @@ public class ChessGame {
         int endCol = move.getEndPosition().getColumn();
         int endRow = move.getEndPosition().getRow();
 
+        System.out.println(endRow + "," + endCol);
 
         if (pieceToMove == null) {
             throw new InvalidMoveException("No piece at start position");
@@ -137,7 +138,6 @@ public class ChessGame {
             throw new InvalidMoveException("It's not your turn.");
         }
         if (!validMoves(move.getStartPosition()).contains(move)) {
-            System.out.println("NO");
             System.out.println(move.toString());
             System.out.println(myBoard.getPiece(move.getStartPosition()));
             throw new InvalidMoveException("Invalid move.");

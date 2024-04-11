@@ -12,4 +12,7 @@ public class Leave extends UserGameCommand{
 
     }
 
+    public int getGameID() {
+        return gameID;
+    }
 }

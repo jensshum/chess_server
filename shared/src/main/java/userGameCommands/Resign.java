@@ -3,5 +3,11 @@ package userGameCommands;
 public class Resign extends UserGameCommand{
     private int gameID;
 
-    CommandType commandType = CommandType.RESIGN;
+    public Resign(int gameID, String username) {
+        this.gameID = gameID;
+        CommandType commandType = CommandType.RESIGN;
+        setUsername(username);
+
+    }
+
 }
