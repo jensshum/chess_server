@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Random;
 
+import static chess.ChessPiece.PieceType.KING;
+import static chess.ChessPiece.PieceType.QUEEN;
 import static ui.EscapeSequences.*;
 
 public class ClientUI {
@@ -207,6 +209,13 @@ public class ClientUI {
                 try {
                     if (reverse) {
                         pieces[col] = board.getPiece(new ChessPosition(row + 1, col + 1));
+                        ChessGame.TeamColor color = pieces[col].getTeamColor();
+                        if (pieces[col].getPieceType() == QUEEN) {
+                            pieces[col] = new ChessPiece(color, KING);
+                        }
+                        else if (pieces[col].getPieceType() == KING) {
+                            pieces[col] = new ChessPiece(color, QUEEN);
+                        }
                     }
                     else {
                         pieces[col] = board.getPiece(new ChessPosition(8 - row, col + 1));

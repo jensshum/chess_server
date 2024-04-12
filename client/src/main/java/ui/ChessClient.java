@@ -80,6 +80,20 @@ public class ChessClient implements NotificationHandler{
             ClientUI.drawBoard(System.out, true, currentGame, null);
             System.out.println();
         }
+        System.out.print(SET_TEXT_COLOR_GREEN);
+        if (currentGame.isInCheckmate(currColor)) {
+            System.out.println("You lost!");
+            inGame = false;
+            currentGame = null;
+        }
+        else if (currentGame.isInStalemate(currColor)) {
+            System.out.println("Stalemate. No more moves!");
+            inGame = false;
+            currentGame = null;
+        }
+        else if (currentGame.isInCheck(currColor)) {
+            System.out.println("Your king is in check. Move to protect it.");
+        }
         return "";
     }
     public String leaveGame(Scanner s) throws ResponseException {
@@ -139,55 +153,46 @@ public class ChessClient implements NotificationHandler{
         String confirm = "n";
         boolean match = false;
         ChessGame.TeamColor pieceColor = null;
-        while (confirm.equalsIgnoreCase("n") || !match)
-        {
+        while (confirm.equalsIgnoreCase("n") || !match) {
+            if (currentGame.isInCheck(currColor)) {
+                System.out.println("Your king is in check\n");
+            }
             System.out.print("Which piece would you like to move?\n(<number 1-8>,<letter a-h>)>>>");
             String pieceToMove = s.nextLine();
             while (!isValidInput(pieceToMove)) {
                 System.out.println("Invalid input. Please match the form <number 1-8>,<letter a-h>\n>>>");
                 pieceToMove = s.nextLine();
             }
-//            if (currColor == WHITE) {
-//                pieceColor = currentGame.getBoard().getPiece(getPosition(pieceToMove)).getTeamColor();
-//            }
-//            else {
-//                pieceColor = currentGame.getBoard().getPiece(getPosition(pieceToMove)).getTeamColor();
-//            }
-//            if (pieceColor == currColor) {
-                highlightValidMoves(s, pieceToMove);
-                System.out.print(SET_TEXT_COLOR_GREEN);
-                System.out.print("Where would you like to move?\n[row,col]>>>");
-                String move = s.nextLine();
-                while (!isValidInput(move)) {
-                    System.out.println("Invalid input. Please match the form <number 1-8>,<letter a-h>\n>>>");
-                    move = s.nextLine();
-                }
-                System.out.print("Move " + currentGame.getBoard().getPiece(getPosition(pieceToMove)).getPieceType().toString() +  " on " + pieceToMove + " to " + move + "?\n(y or n)>>>");
-                confirm = s.nextLine();
-                if (confirm.equalsIgnoreCase("y")) {
-                    ChessPosition startPosition = getPosition(pieceToMove);
-                    ChessPosition endPosition = getPosition(move);
-                    Collection<ChessMove> validMoves = currentGame.validMoves(getPosition(pieceToMove));
-                    ChessMove newMove = new ChessMove(getPosition(pieceToMove), getPosition(move), null);
-                    for (ChessMove validMove : validMoves) {
-                        if (validMove.equals(newMove)) {
-                            match = true;
-                        }
-                    }
-                    if (match) {
-                        ChessMove toMove = new ChessMove(startPosition, endPosition, null);
-                        ws.makeMove(inGameID, signedIn.authToken(), signedIn.username(), toMove);
-                        redrawBoard();
-                    }
-                    else {
-                        System.out.println("Not a valid move.");
+            highlightValidMoves(s, pieceToMove);
+            System.out.print(SET_TEXT_COLOR_GREEN);
+            System.out.print("Where would you like to move?\n[row,col]>>>");
+            String move = s.nextLine();
+            while (!isValidInput(move)) {
+                System.out.println("Invalid input. Please match the form <number 1-8>,<letter a-h>\n>>>");
+                move = s.nextLine();
+            }
+            System.out.print("Move " + currentGame.getBoard().getPiece(getPosition(pieceToMove)).getPieceType().toString() + " on " + pieceToMove + " to " + move + "?\n(y or n)>>>");
+            confirm = s.nextLine();
+            if (confirm.equalsIgnoreCase("y")) {
+                ChessPosition startPosition = getPosition(pieceToMove);
+                ChessPosition endPosition = getPosition(move);
+                Collection<ChessMove> validMoves = currentGame.validMoves(getPosition(pieceToMove));
+                ChessMove newMove = new ChessMove(getPosition(pieceToMove), getPosition(move), null);
+                for (ChessMove validMove : validMoves) {
+                    if (validMove.equals(newMove)) {
+                        match = true;
                     }
                 }
-//            }
-//            else{
-//                System.out.print("That's not your piece! Your color is " + currColor.toString() + ".\n");
-//            }
+                if (match) {
+                    ChessMove toMove = new ChessMove(startPosition, endPosition, null);
+                    ws.makeMove(inGameID, signedIn.authToken(), signedIn.username(), toMove);
+                    redrawBoard();
+                } else {
+                    System.out.println("Not a valid move.");
+                }
+            }
         }
+
         return "";
     }
 
@@ -197,7 +202,6 @@ public class ChessClient implements NotificationHandler{
         if (input.equalsIgnoreCase("y")) {
             ws.resign(inGameID, signedIn.username());
         }
-        inGame = false;
         return "";
     }
 
